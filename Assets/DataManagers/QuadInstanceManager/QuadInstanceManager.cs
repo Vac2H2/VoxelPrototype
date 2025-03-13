@@ -18,21 +18,31 @@ public abstract partial class QuadInstanceManager
 		chunkToBlocksMap = new NativeHashMap<int3, NativeList<int>>(maxNumChunk, Allocator.Persistent);
 		availableBlockIndex = new NativeQueue<int>(Allocator.Persistent);
 
+		int totalSize = maxNumBlock * BLOCK_SIZE;
+
 		instanceBuffer = new ComputeBuffer(
-			maxNumBlock * BLOCK_SIZE,
+			totalSize,
 			sizeof(uint),
 			ComputeBufferType.Structured
 		);
+		uint[] initInstanceArray = new uint[totalSize];
+		instanceBuffer.SetData(initInstanceArray);
+
 		chunkPositionBuffer = new ComputeBuffer(
-			maxNumBlock * BLOCK_SIZE,
+			totalSize,
 			sizeof(int) * 3,
 			ComputeBufferType.Structured
 		);
+		int3[] initPositionArray = new int3[totalSize];
+		chunkPositionBuffer.SetData(initPositionArray);
+
 		instanceCountBuffer = new ComputeBuffer(
-			maxNumBlock * BLOCK_SIZE,
+			totalSize,
 			sizeof(int),
 			ComputeBufferType.Structured
 		);
+		int[] initCountArray = new int[totalSize];
+		instanceCountBuffer.SetData(initCountArray);
 
 		for (int i = 0; i < maxNumBlock; i++)
 		{
