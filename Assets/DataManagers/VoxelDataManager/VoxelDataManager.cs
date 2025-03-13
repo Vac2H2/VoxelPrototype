@@ -9,7 +9,6 @@ public abstract partial class VoxelDataManager
 	public const int TYPE_SIZE = 32 * 32 * 32;
 
 	protected NativeHashMap<int3, int> chunkMap;
-	protected NativeHashMap<int, NativeList<int>> blockIndexMap;
 	protected NativeQueue<int3> dirtyChunks;
 
 	protected NativeList<uint> stateList;
@@ -19,8 +18,8 @@ public abstract partial class VoxelDataManager
 
 	public VoxelDataManager(int maxNumChunk)
 	{
+		numChunkAdded = 0;
 		chunkMap = new NativeHashMap<int3, int>(maxNumChunk, Allocator.Persistent);
-		blockIndexMap = new NativeHashMap<int, NativeList<int>>(maxNumChunk, Allocator.Persistent);
 		dirtyChunks = new NativeQueue<int3>(Allocator.Persistent);
 		stateList = new NativeList<uint>(maxNumChunk, Allocator.Persistent);
 		typeList = new NativeList<uint>(maxNumChunk, Allocator.Persistent);
@@ -88,7 +87,6 @@ public abstract partial class VoxelDataManager
 	public void DestroyBasicStructures()
 	{
 		chunkMap.Dispose();
-		blockIndexMap.Dispose();
 		dirtyChunks.Dispose();
 		stateList.Dispose();
 		typeList.Dispose();
