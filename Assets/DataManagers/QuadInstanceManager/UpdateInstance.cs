@@ -4,7 +4,16 @@ using Unity.Mathematics;
 
 public abstract partial class QuadInstanceManager
 {
-	public void UpdateInstance(int3 chunkPosition, NativeList<VoxelQuadsGeneration.InstanceData> data)
+	/// <summary>
+	/// Update greedy quad instances given a chunk
+	/// </summary>
+	/// <param name="chunkPosition">The chunk you want to update</param>
+	/// <param name="data"></param>
+	public void UpdateInstance(
+		int3 chunkPosition,
+		int chunkIndex,
+		NativeList<VoxelQuadsGeneration.InstanceData> data
+	)
 	{
 		// could not find associate chunk
 		if (!chunkToBlocksMap.TryGetValue(chunkPosition, out NativeList<int> blockIndexList))
@@ -15,6 +24,9 @@ public abstract partial class QuadInstanceManager
 		// for buffer update
 		int3[] chunkPositionArray = new int3[1];
 		chunkPositionArray[0] = chunkPosition;
+
+		int[] chunkIndexArray = new int[1];
+		chunkIndexArray[0] = chunkIndex;
 
 		// number of block needed to store new instances
 		int numBlockNeeded = (int)math.ceil((float)data.Length / BLOCK_SIZE);
@@ -49,6 +61,8 @@ public abstract partial class QuadInstanceManager
 
 				instanceCountArray[0] = instanceCount;
 				instanceCountBuffer.SetData(instanceCountArray, 0, blockIndex, 1);
+
+				typeIndexBuffer.SetData(chunkIndexArray, 0, blockIndex, 1);
 
 				elementLeft -= BLOCK_SIZE;
 			}
@@ -93,6 +107,8 @@ public abstract partial class QuadInstanceManager
 				instanceCountArray[0] = instanceCount;
 				instanceCountBuffer.SetData(instanceCountArray, 0, blockIndex, 1);
 
+				typeIndexBuffer.SetData(chunkIndexArray, 0, blockIndex, 1);
+
 				elementLeft -= BLOCK_SIZE;
 			}
 
@@ -113,6 +129,8 @@ public abstract partial class QuadInstanceManager
 				// update instance number in the block
 				instanceCountArray[0] = instanceCount;
 				instanceCountBuffer.SetData(instanceCountArray, 0, blockIndex, 1);
+
+				typeIndexBuffer.SetData(chunkIndexArray, 0, blockIndex, 1);
 
 				elementLeft -= BLOCK_SIZE;
 			}

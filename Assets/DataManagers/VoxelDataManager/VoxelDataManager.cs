@@ -14,6 +14,8 @@ public abstract partial class VoxelDataManager
 	protected NativeList<uint> stateList;
 	protected NativeList<uint> typeList;
 
+	protected ComputeBuffer typeBuffer;
+
 	protected int numChunkAdded;
 
 	public VoxelDataManager(int maxNumChunk)
@@ -23,6 +25,14 @@ public abstract partial class VoxelDataManager
 		dirtyChunks = new NativeQueue<int3>(Allocator.Persistent);
 		stateList = new NativeList<uint>(maxNumChunk, Allocator.Persistent);
 		typeList = new NativeList<uint>(maxNumChunk, Allocator.Persistent);
+
+		typeBuffer = new ComputeBuffer(
+			maxNumChunk * VoxelDataManager.TYPE_SIZE,
+			sizeof(uint),
+			ComputeBufferType.Structured
+		);
+		int[] initTypeArray = new int[maxNumChunk * TYPE_SIZE];
+		typeBuffer.SetData(initTypeArray);
 	}
 
 	/// <summary>
@@ -82,6 +92,30 @@ public abstract partial class VoxelDataManager
 	public void AddDirtyFlag(int3 chunkPosition)
 	{
 		dirtyChunks.Enqueue(chunkPosition);
+	}
+
+	public NativeQueue<int3> GetDirtyChunkQueue()
+	{
+		return dirtyChunks;
+	}
+
+	public int GetChunkIndex(int3 chunkPosition)
+	{
+		if (chunkMap.TryGetValue(chunkPosition, out int chunkIndex))
+		{
+			return chunkIndex;
+		}
+		return -1;
+	}
+
+	public void UpdateTypeBuffer(int3 chunkPosition)
+	{
+		if (chunkMap.TryGetValue(chunkPosition, out int chunkIndex))
+		{
+			int startIndex = chunkIndex * TYPE_SIZE;
+			NativeSlice<uint> slice = new NativeSlice<uint>(typeList.AsArray(), startIndex, TYPE_SIZE);
+			typeBuffer.SetData(slice.ToArray(), 0, startIndex, TYPE_SIZE);
+		}
 	}
 
 	public void DestroyBasicStructures()

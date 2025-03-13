@@ -12,6 +12,7 @@ public abstract partial class QuadInstanceManager
 	protected ComputeBuffer instanceBuffer;
 	protected ComputeBuffer chunkPositionBuffer;
 	protected ComputeBuffer instanceCountBuffer;
+	protected ComputeBuffer typeIndexBuffer;
 
 	public QuadInstanceManager(int maxNumChunk, int maxNumBlock)
 	{
@@ -43,6 +44,14 @@ public abstract partial class QuadInstanceManager
 		);
 		int[] initCountArray = new int[totalSize];
 		instanceCountBuffer.SetData(initCountArray);
+
+		typeIndexBuffer = new ComputeBuffer(
+			totalSize,
+			sizeof(int),
+			ComputeBufferType.Structured
+		);
+		int[] initTypeIndexArray = new int[totalSize];
+		typeIndexBuffer.SetData(initTypeIndexArray);
 
 		for (int i = 0; i < maxNumBlock; i++)
 		{

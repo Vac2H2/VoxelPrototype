@@ -55,7 +55,7 @@ public class QuadManagerTests
         NativeList<VoxelQuadsGeneration.InstanceData> instList
         = QuadManager.GenerateDummyInstances(dummySize, quadData);
 
-        quadManager.UpdateInstance(chunkPosition, instList);
+        quadManager.UpdateInstance(chunkPosition, 0, instList);
         bool allMatch = quadManager.CheckInstanceBufferRange(quadData, 0, dummySize);
         Assert.IsTrue(allMatch);
 
@@ -82,7 +82,7 @@ public class QuadManagerTests
         };
         NativeList<VoxelQuadsGeneration.InstanceData> instList
         = QuadManager.GenerateDummyInstances(dummySize, quadData);
-        quadManager.UpdateInstance(chunkPosition, instList);
+        quadManager.UpdateInstance(chunkPosition, 0, instList);
         instList.Dispose();
 
         // second time
@@ -94,7 +94,7 @@ public class QuadManagerTests
         };
         instList
         = QuadManager.GenerateDummyInstances(dummySize, quadData);
-        quadManager.UpdateInstance(chunkPosition, instList);
+        quadManager.UpdateInstance(chunkPosition, 0, instList);
         bool allMatch = quadManager.CheckInstanceBufferRange(quadData, 0, dummySize);
 
         Assert.IsTrue(allMatch);
@@ -124,7 +124,7 @@ public class QuadManagerTests
         };
         NativeList<VoxelQuadsGeneration.InstanceData> instList
         = QuadManager.GenerateDummyInstances(dummySize0, quadData);
-        quadManager.UpdateInstance(chunkPosition0, instList);
+        quadManager.UpdateInstance(chunkPosition0, 0, instList);
         bool allMatch = quadManager.CheckInstanceBufferRange(quadData, 0, dummySize0);
         Assert.IsTrue(allMatch);
         instList.Dispose();
@@ -138,7 +138,7 @@ public class QuadManagerTests
         };
         instList
         = QuadManager.GenerateDummyInstances(dummySize1, quadData);
-        quadManager.UpdateInstance(chunkPosition1, instList);
+        quadManager.UpdateInstance(chunkPosition1, 0, instList);
         int BLOCK_SIZE = 1024;
         allMatch = quadManager.CheckInstanceBufferRange(quadData, BLOCK_SIZE, dummySize1);
         Assert.IsTrue(allMatch);
@@ -168,7 +168,7 @@ public class QuadManagerTests
         };
         NativeList<VoxelQuadsGeneration.InstanceData> instList
         = QuadManager.GenerateDummyInstances(dummySize0, quadData0);
-        quadManager.UpdateInstance(chunkPosition0, instList);
+        quadManager.UpdateInstance(chunkPosition0, 0, instList);
         instList.Dispose();
 
         // second chunk
@@ -180,14 +180,14 @@ public class QuadManagerTests
         };
         instList
         = QuadManager.GenerateDummyInstances(dummySize1, quadData1);
-        quadManager.UpdateInstance(chunkPosition1, instList);
+        quadManager.UpdateInstance(chunkPosition1, 0, instList);
         instList.Dispose();
 
         // upload first chunk with larger number of instances
         int dummySize2 = 1048;
         instList
         = QuadManager.GenerateDummyInstances(dummySize2, quadData0);
-        quadManager.UpdateInstance(chunkPosition0, instList);
+        quadManager.UpdateInstance(chunkPosition0, 0, instList);
         instList.Dispose();
 
         int BLOCK_SIZE = 1024;
