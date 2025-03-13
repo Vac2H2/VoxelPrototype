@@ -78,7 +78,7 @@ public abstract partial class QuadInstanceManager
 
 			// use existed block
 			int[] instanceCountArray = new int[1];
-			for (int i = 0; i < numBlockNeeded; i++)
+			for (int i = 0; i < numBlockUsed; i++)
 			{
 				int instanceCount = math.min(elementLeft, BLOCK_SIZE);
 				int blockIndex = blockIndexList[i];

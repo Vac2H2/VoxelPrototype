@@ -22,7 +22,7 @@ public abstract partial class QuadInstanceManager
 
 		instanceBuffer = new ComputeBuffer(
 			totalSize,
-			sizeof(uint),
+			sizeof(uint) * 2,
 			ComputeBufferType.Structured
 		);
 		uint[] initInstanceArray = new uint[totalSize];

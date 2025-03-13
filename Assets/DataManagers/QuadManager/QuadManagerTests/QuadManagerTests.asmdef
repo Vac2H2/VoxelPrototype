@@ -6,7 +6,8 @@
         "UnityEditor.TestRunner",
         "DataManagersAssembly",
         "Unity.Collections",
-        "Unity.Mathematics"
+        "Unity.Mathematics",
+        "GreedyQuadUpdatorAssembly"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
