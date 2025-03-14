@@ -31,8 +31,6 @@ public class VisualDataUpdator {
             quadInstanceManager.UpdateInstance(chunkPosition, chunkIndex, instanceList);
             voxelDataManager.UpdateTypeBuffer(chunkPosition);
 
-            // Debug.Log(quadInstanceManager.GetBlockInstanceCount(0));
-
             instanceList.Dispose();
         }
     }

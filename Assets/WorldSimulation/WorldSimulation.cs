@@ -30,7 +30,7 @@ public class WorldSimulation : MonoBehaviour
             typeBuffer
         );
 
-        VoxelDataUpdator.CreateBasicScene(chunkVoxelManager);
+        VoxelDataUpdator.CreateBasicScene(chunkVoxelManager, quadManager);
     }
 
     void Update()
