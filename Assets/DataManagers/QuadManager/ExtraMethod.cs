@@ -4,61 +4,71 @@ using Unity.Mathematics;
 
 public partial class QuadManager : QuadInstanceManager
 {
-	public int GetNumOfAvailableBlocks()
-	{
-		return availableBlockIndex.Count;
-	}
+	// public int GetNumOfAvailableBlocks()
+	// {
+	// 	return availableBlockIndex.Count;
+	// }
 
-	public bool CheckChunkExistsInChunkToBlocksMap(int3 chunkPosition)
-	{
-		if (chunkToBlocksMap.ContainsKey(chunkPosition))
-		{
-			return true;
-		}
-		return false;
-	}
+	// public bool CheckChunkExistsInChunkToBlocksMap(int3 chunkPosition)
+	// {
+	// 	if (chunkToBlocksMap.ContainsKey(chunkPosition))
+	// 	{
+	// 		return true;
+	// 	}
+	// 	return false;
+	// }
 
-	public static NativeList<VoxelQuadsGeneration.InstanceData> GenerateDummyInstances(
-		int number,
-		VoxelQuadsGeneration.InstanceData data
-	)
-	{
-		NativeList<VoxelQuadsGeneration.InstanceData> list
-		= new NativeList<VoxelQuadsGeneration.InstanceData>(
-			number,
-			Allocator.Persistent
-		);
+	// public static NativeList<VoxelQuadsGeneration.InstanceData> GenerateDummyInstances(
+	// 	int number,
+	// 	VoxelQuadsGeneration.InstanceData data
+	// )
+	// {
+	// 	NativeList<VoxelQuadsGeneration.InstanceData> list
+	// 	= new NativeList<VoxelQuadsGeneration.InstanceData>(
+	// 		number,
+	// 		Allocator.Persistent
+	// 	);
 
-		for (int i = 0; i < number; i++)
-		{
-			list.Add(
-				new VoxelQuadsGeneration.InstanceData
-				{
-					EncodedQuadData = data.EncodedQuadData,
-					Direction = data.Direction
-				}
-			);
-		}
+	// 	for (int i = 0; i < number; i++)
+	// 	{
+	// 		list.Add(
+	// 			new VoxelQuadsGeneration.InstanceData
+	// 			{
+	// 				EncodedQuadData = data.EncodedQuadData,
+	// 				Direction = data.Direction
+	// 			}
+	// 		);
+	// 	}
 
-		return list;
-	}
+	// 	return list;
+	// }
 
-	public bool CheckInstanceBufferRange(VoxelQuadsGeneration.InstanceData data, int start, int length)
-	{
-		VoxelQuadsGeneration.InstanceData[] bufferData
-		= new VoxelQuadsGeneration.InstanceData[instanceBuffer.count];
+	// public bool CheckInstanceBufferRange(VoxelQuadsGeneration.InstanceData data, int start, int length)
+	// {
+	// 	VoxelQuadsGeneration.InstanceData[] bufferData
+	// 	= new VoxelQuadsGeneration.InstanceData[instanceBuffer.count];
 
-		instanceBuffer.GetData(bufferData);
+	// 	instanceBuffer.GetData(bufferData);
 
-		for (int i = start; i < start + length; i++)
-		{
-			uint quad = bufferData[i].EncodedQuadData;
-			uint direction = bufferData[i].Direction;
-			if (quad != data.EncodedQuadData | direction != bufferData[i].Direction)
-			{
-				return false;
-			}
-		}
-		return true;
-	}
+	// 	for (int i = start; i < start + length; i++)
+	// 	{
+	// 		uint quad = bufferData[i].EncodedQuadData;
+	// 		uint direction = bufferData[i].Direction;
+	// 		if (quad != data.EncodedQuadData | direction != bufferData[i].Direction)
+	// 		{
+	// 			return false;
+	// 		}
+	// 	}
+	// 	return true;
+	// }
+
+	// public int GetBlockInstanceCount(int blockIndex)
+	// {
+	// 	int bufferSize = instanceCountBuffer.count;
+	// 	int[] instCountArray = new int[bufferSize];
+
+	// 	instanceCountBuffer.GetData(instCountArray);
+		
+	// 	return instCountArray[blockIndex];
+	// }
 }

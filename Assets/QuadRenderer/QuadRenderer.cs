@@ -40,19 +40,6 @@ public partial class QuadRenderer
 
 	public void Update()
 	{
-		PreprocessInstance();
-		validInstanceBuffer.SetCounterValue(0);
-		
-		// Graphics.DrawMeshInstancedIndirect(
-		// 	dummyMesh,
-		// 	0,
-		// 	InstanceShader,
-		// 	bounds,
-		// 	argsBuffer,
-		// 	0,
-		// 	null,
-		// 	ShadowCastingMode.Off,
-		// 	true 
-		// );
+		IssueRenderCycle();
 	}
 }

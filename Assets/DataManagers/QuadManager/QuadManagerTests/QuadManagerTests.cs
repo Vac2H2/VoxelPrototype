@@ -33,6 +33,9 @@ public class QuadManagerTests
         bool isExisted = quadManager.CheckChunkExistsInChunkToBlocksMap(chunkPosition);
         Assert.IsTrue(isExisted);
 
+        int instanceCount = quadManager.GetBlockInstanceCount(0);
+        Assert.AreEqual(0, instanceCount);
+
         quadManager.DestroyBasicStructures();
     }
 
@@ -58,6 +61,9 @@ public class QuadManagerTests
         quadManager.UpdateInstance(chunkPosition, 0, instList);
         bool allMatch = quadManager.CheckInstanceBufferRange(quadData, 0, dummySize);
         Assert.IsTrue(allMatch);
+
+        int instanceCount = quadManager.GetBlockInstanceCount(0);
+        Assert.AreEqual(256, instanceCount);
 
         instList.Dispose();
         quadManager.DestroyBasicStructures();
@@ -99,6 +105,9 @@ public class QuadManagerTests
 
         Assert.IsTrue(allMatch);
 
+        int instanceCount = quadManager.GetBlockInstanceCount(0);
+        Assert.AreEqual(756, instanceCount);
+
         instList.Dispose();
         quadManager.DestroyBasicStructures();
     }
@@ -129,6 +138,9 @@ public class QuadManagerTests
         Assert.IsTrue(allMatch);
         instList.Dispose();
 
+        int instanceCount = quadManager.GetBlockInstanceCount(0);
+        Assert.AreEqual(256, instanceCount);
+
         // second chunk
         int dummySize1 = 756;
         quadData = new VoxelQuadsGeneration.InstanceData
@@ -143,6 +155,9 @@ public class QuadManagerTests
         allMatch = quadManager.CheckInstanceBufferRange(quadData, BLOCK_SIZE, dummySize1);
         Assert.IsTrue(allMatch);
         instList.Dispose();
+
+        instanceCount = quadManager.GetBlockInstanceCount(1);
+        Assert.AreEqual(756, instanceCount);
 
         quadManager.DestroyBasicStructures();
     }
@@ -195,6 +210,16 @@ public class QuadManagerTests
         int elementLeft = 1048 - 1024;
         Assert.IsTrue(quadManager.CheckInstanceBufferRange(quadData0, 2 * BLOCK_SIZE, elementLeft));
         Assert.IsTrue(quadManager.CheckInstanceBufferRange(quadData1, BLOCK_SIZE, dummySize1));
+
+        int instanceCount = quadManager.GetBlockInstanceCount(0);
+        Assert.AreEqual(BLOCK_SIZE, instanceCount);
+
+        instanceCount = quadManager.GetBlockInstanceCount(1);
+        Assert.AreEqual(dummySize1, instanceCount);
+
+        instanceCount = quadManager.GetBlockInstanceCount(2);
+        Assert.AreEqual(elementLeft, instanceCount);
+
         quadManager.DestroyBasicStructures();
-    }
+    } 
 }

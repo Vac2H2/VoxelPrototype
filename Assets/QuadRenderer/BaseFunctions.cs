@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Unity.Mathematics;
+using UnityEngine.Rendering;
 
 public partial class QuadRenderer
 {
@@ -99,8 +100,36 @@ public partial class QuadRenderer
 		int numGroup = (instanceBufferCount + WORKGROUP_SIZE - 1) / WORKGROUP_SIZE;
 		int kernel = preprocessShader.FindKernel("PreprocessInstance");
 		preprocessShader.Dispatch(kernel, numGroup, 1, 1);
-		
+
 		// offset of 4 bytes for args[1]
 		ComputeBuffer.CopyCount(validInstanceBuffer, argsBuffer, 4);
+
+
+		// ComputeBuffer countBuffer = new ComputeBuffer(1, sizeof(int), ComputeBufferType.Raw);
+		// ComputeBuffer.CopyCount(validInstanceBuffer, countBuffer, 0);
+
+		// int[] countArray = new int[1];
+		// countBuffer.GetData(countArray);
+		// Debug.Log(countArray[0]);
+		// countBuffer.Release();
+	}
+
+	public void IssueRenderCycle()
+	{
+		PreprocessInstance();
+		
+		Graphics.DrawMeshInstancedIndirect(
+			dummyMesh,
+			0,
+			InstanceShader,
+			bounds,
+			argsBuffer,
+			0,
+			null,
+			ShadowCastingMode.Off,
+			true
+		);
+		 
+		validInstanceBuffer.SetCounterValue(0);
 	}
 }

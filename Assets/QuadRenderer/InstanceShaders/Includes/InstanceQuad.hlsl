@@ -20,7 +20,7 @@ struct CompactInstanceData
     float Direction;
     float3 ChunkPosition;
     float TypeIndex;
-}
+};
 
 StructuredBuffer<CompactInstanceData> _validInstanceBuffer;
 StructuredBuffer<uint> _typeBuffer;
