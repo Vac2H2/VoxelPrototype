@@ -4,12 +4,6 @@
 
 #include "QuadInstances.hlsl"
 
-struct InstanceData
-{
-    uint EncodedQuad;
-    uint Direction;
-};
-
 struct QuadData
 {       
     uint x;
@@ -20,10 +14,15 @@ struct QuadData
     uint zScale;
 };
 
-StructuredBuffer<InstanceData> _instanceBuffer;
-StructuredBuffer<int> _instanceCountBuffer;
-StructuredBuffer<int3> _chunkPositionBuffer;
-StructuredBuffer<int> _typeIndexBuffer;
+struct CompactInstanceData
+{
+    QuadData PositionAndScale;
+    float Direction;
+    float3 ChunkPosition;
+    float TypeIndex;
+}
+
+StructuredBuffer<CompactInstanceData> _validInstanceBuffer;
 StructuredBuffer<uint> _typeBuffer;
 
 uint2 GetProjectedCoord(uint3 coord, uint direction)
@@ -39,18 +38,6 @@ uint2 GetProjectedCoord(uint3 coord, uint direction)
     return uint2(coord[firstIndex], coord[secondIndex]);
 }
 
-QuadData DecodeQuad(uint data)
-{
-    QuadData result;
-    result.x       =  (data >> 0)  & 0x1F;  
-    result.y       =  (data >> 5)  & 0x1F;  
-    result.z       =  (data >> 10) & 0x1F;  
-    result.xScale  =  ((data >> 15) & 0x1F) + 1;  
-    result.yScale  =  ((data >> 20) & 0x1F) + 1;  
-    result.zScale  =  ((data >> 25) & 0x1F) + 1;
-    return result;
-}
-
 void GetPositionNormalUV_float(
     float instanceID, 
     float vertexID, 
@@ -61,20 +48,11 @@ void GetPositionNormalUV_float(
     out float3 localPosition,
     out float typeIndex)
 {
-    uint blockID = (uint)instanceID / 1024;
+    CompactInstanceData instanceData = _validInstanceBuffer[instanceID];
+    typeIndex = instanceData.TypeIndex;
+    int3 worldPosition = instanceData.ChunkPosition;
 
-    uint instanceCount = _instanceCountBuffer[blockID];
-    if ((uint)instanceID >= 1024 * blockID + instanceCount)
-    {
-        return;
-    }
-
-
-    InstanceData instanceData = _instanceBuffer[instanceID];
-    typeIndex = _typeIndexBuffer[blockID];
-    int3 worldPosition = _chunkPositionBuffer[blockID];
-
-    QuadData quadData = DecodeQuad(instanceData.EncodedQuad);
+    QuadData quadData = instanceData.PositionAndScale;
 
     uint direction = instanceData.Direction;
 

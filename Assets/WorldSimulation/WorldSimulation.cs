@@ -36,4 +36,11 @@ public class WorldSimulation : MonoBehaviour
         visualDataUpdator.Update();
         quadRenderer.Update();
     }
+
+    void OnDestroy()
+    {
+        chunkVoxelManager.DestroyBasicStructures();
+        quadManager.DestroyBasicStructures();
+        quadRenderer.Destroy();
+    }
 }

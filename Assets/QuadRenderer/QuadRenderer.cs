@@ -12,7 +12,12 @@ public partial class QuadRenderer
 	ComputeBuffer typeIndexBuffer;
 	ComputeBuffer typeBuffer;
 
+	ComputeShader preprocessShader;
+	public const int WORKGROUP_SIZE = 64;
+	ComputeBuffer validInstanceBuffer;
 	Material InstanceShader;
+
+	int instanceBufferCount;
 
 	public QuadRenderer(
 		ComputeBuffer _instanceBuffer,
@@ -28,21 +33,26 @@ public partial class QuadRenderer
 		typeIndexBuffer = _typeIndexBuffer;
 		typeBuffer = _typeBuffer;
 
+		instanceBufferCount = instanceBuffer.count;
+
 		InitStructures();
 	}
 
 	public void Update()
 	{
-		Graphics.DrawMeshInstancedIndirect(
-			dummyMesh,
-			0,
-			InstanceShader,
-			bounds,
-			argsBuffer,
-			0,
-			null,
-			ShadowCastingMode.Off,
-			true 
-		);
+		PreprocessInstance();
+		validInstanceBuffer.SetCounterValue(0);
+		
+		// Graphics.DrawMeshInstancedIndirect(
+		// 	dummyMesh,
+		// 	0,
+		// 	InstanceShader,
+		// 	bounds,
+		// 	argsBuffer,
+		// 	0,
+		// 	null,
+		// 	ShadowCastingMode.Off,
+		// 	true 
+		// );
 	}
 }

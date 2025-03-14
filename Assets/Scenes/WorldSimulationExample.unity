@@ -438,7 +438,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxNumberChunk: 100
-  MaxNumberBlock: 1000
+  MaxNumberBlock: 3000
 --- !u!4 &753998818
 Transform:
   m_ObjectHideFlags: 0

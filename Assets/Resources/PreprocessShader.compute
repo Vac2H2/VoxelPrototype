@@ -1,0 +1,86 @@
+#pragma kernel PreprocessInstance
+
+struct InstanceData
+{
+    uint EncodedQuad;
+    uint Direction;
+};
+
+struct QuadData
+{       
+    uint x;
+    uint y;
+    uint z;
+    uint xScale;
+    uint yScale;
+    uint zScale;
+};
+
+struct CompactInstanceData
+{
+    QuadData PositionAndScale;
+    float Direction;
+    float3 ChunkPosition;
+    float TypeIndex;
+};
+
+StructuredBuffer<InstanceData> _instanceBuffer;
+StructuredBuffer<int> _instanceCountBuffer;
+StructuredBuffer<int3> _chunkPositionBuffer;
+StructuredBuffer<int> _typeIndexBuffer;
+
+AppendStructuredBuffer<CompactInstanceData> _validInstanceBuffer;
+
+uint2 GetProjectedCoord(uint3 coord, uint direction)
+{
+    uint group = direction >> 1;  
+
+    int eq0 = (((int)group ^ 0) - 1) >> 31 & 1; 
+    int eq1 = (((int)group ^ 1) - 1) >> 31 & 1; 
+
+    uint firstIndex  = 2 * eq0;     
+    uint secondIndex = 1 + eq1;     
+
+    return uint2(coord[firstIndex], coord[secondIndex]);
+}
+
+QuadData DecodeQuad(uint data)
+{
+    QuadData result;
+    result.x       =  (data >> 0)  & 0x1F;  
+    result.y       =  (data >> 5)  & 0x1F;  
+    result.z       =  (data >> 10) & 0x1F;  
+    result.xScale  =  ((data >> 15) & 0x1F) + 1;  
+    result.yScale  =  ((data >> 20) & 0x1F) + 1;  
+    result.zScale  =  ((data >> 25) & 0x1F) + 1;
+    return result;
+}
+
+[numthreads(64, 1, 1)]
+void PreprocessInstance (uint3 id : SV_DispatchThreadID)
+{
+    uint blockID = id.x / 1024;
+    uint instanceID = id.x;
+
+    uint instanceCount = _instanceCountBuffer[blockID];
+    if (instanceID >= 1024 * blockID + instanceCount)
+    {
+        return;
+    }
+
+    InstanceData instanceData = _instanceBuffer[instanceID];
+    float typeIndex = _typeIndexBuffer[blockID];
+    float3 chunkPosition = _chunkPositionBuffer[blockID];
+
+    QuadData quadData = DecodeQuad(instanceData.EncodedQuad);
+
+    float direction = instanceData.Direction;
+    
+    CompactInstanceData compactData;
+    compactData.PositionAndScale = quadData;
+    compactData.Direction = direction;
+    compactData.ChunkPosition = chunkPosition;
+    compactData.TypeIndex = typeIndex;
+
+    _validInstanceBuffer.Append(compactData);
+}

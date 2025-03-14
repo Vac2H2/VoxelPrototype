@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using Unity.Mathematics;
 
 public partial class QuadRenderer
 {
@@ -39,13 +41,28 @@ public partial class QuadRenderer
 		argsBuffer.SetData(args);
 	}
 
+	void InitPreprocessShader()
+	{
+		preprocessShader = Resources.Load<ComputeShader>("PreprocessShader");
+		int kernel = preprocessShader.FindKernel("PreprocessInstance");
+
+		preprocessShader.SetBuffer(kernel, "_instanceBuffer", instanceBuffer);
+		preprocessShader.SetBuffer(kernel, "_instanceCountBuffer", instanceCountBuffer);
+		preprocessShader.SetBuffer(kernel, "_chunkPositionBuffer", chunkPositionBuffer);
+		preprocessShader.SetBuffer(kernel, "_typeIndexBuffer", typeIndexBuffer);
+
+		validInstanceBuffer = new ComputeBuffer(
+			instanceBuffer.count,
+			44,
+			ComputeBufferType.Append
+		);
+		preprocessShader.SetBuffer(kernel, "_validInstanceBuffer", validInstanceBuffer);
+	}
+
 	void InitShader()
 	{
 		InstanceShader = new Material(Shader.Find("Shader Graphs/InstanceShader"));
-		InstanceShader.SetBuffer("_instanceBuffer", instanceBuffer);
-		InstanceShader.SetBuffer("_instanceCountBuffer", instanceCountBuffer);
-		InstanceShader.SetBuffer("_chunkPositionBuffer", chunkPositionBuffer);
-		InstanceShader.SetBuffer("_chunkIndexBuffer", typeIndexBuffer);
+		InstanceShader.SetBuffer("_validInstanceBuffer", validInstanceBuffer);
 		InstanceShader.SetBuffer("_typeBuffer", typeBuffer);
 	}
 
@@ -54,8 +71,10 @@ public partial class QuadRenderer
 		InitBounds();
 		InitDummyMesh();
 		InitArgsBuffer();
-		InitShader();
 		UpdateArgsBuffer((uint)instanceBuffer.count);
+
+		InitPreprocessShader();
+		InitShader();
 	}
 
 	void UpdateArgsBuffer(uint numInstance)
@@ -72,5 +91,16 @@ public partial class QuadRenderer
 	public void Destroy()
 	{
 		argsBuffer.Release();
+		validInstanceBuffer.Release();
+	}
+
+	public void PreprocessInstance()
+	{
+		int numGroup = (instanceBufferCount + WORKGROUP_SIZE - 1) / WORKGROUP_SIZE;
+		int kernel = preprocessShader.FindKernel("PreprocessInstance");
+		preprocessShader.Dispatch(kernel, numGroup, 1, 1);
+		
+		// offset of 4 bytes for args[1]
+		ComputeBuffer.CopyCount(validInstanceBuffer, argsBuffer, 4);
 	}
 }
