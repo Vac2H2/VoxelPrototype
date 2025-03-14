@@ -2,18 +2,19 @@ using UnityEngine;
 using Unity.Collections;
 using Unity.Mathematics;
 
-public class VisualDataUpdator : MonoBehaviour
-{
-    ChunkVoxelManager chunkVoxelManager;
-    QuadManager quadManager;
-    void Start()
+public class VisualDataUpdator {
+    VoxelDataManager voxelDataManager;
+    QuadInstanceManager quadInstanceManager;
+
+    public VisualDataUpdator(VoxelDataManager _voxelDataManager, QuadInstanceManager _quadInstanceManager)
     {
-        
+        voxelDataManager = _voxelDataManager;
+        quadInstanceManager = _quadInstanceManager;
     }
 
-    void Update()
+    public void Update()
     {
-        NativeQueue<int3> dirtyChunksQueue = chunkVoxelManager.GetDirtyChunkQueue();
+        NativeQueue<int3> dirtyChunksQueue = voxelDataManager.GetDirtyChunkQueue();
         int count = dirtyChunksQueue.Count;
 
         for (int i = 0; i < count; i++)
@@ -21,14 +22,14 @@ public class VisualDataUpdator : MonoBehaviour
             int3 chunkPosition = dirtyChunksQueue.Dequeue();
 
             (bool found, NativeSlice<uint> state, NativeSlice<uint> type)
-            = chunkVoxelManager.GetChunkSlice(chunkPosition);
+            = voxelDataManager.GetChunkSlice(chunkPosition);
 
             NativeList<VoxelQuadsGeneration.InstanceData> instanceList
             = VoxelQuadsGeneration.GreedyQuadsPipeline(state);
 
-            int chunkIndex = chunkVoxelManager.GetChunkIndex(chunkPosition);
-            quadManager.UpdateInstance(chunkPosition, chunkIndex, instanceList);
-            chunkVoxelManager.UpdateTypeBuffer(chunkPosition);
+            int chunkIndex = voxelDataManager.GetChunkIndex(chunkPosition);
+            quadInstanceManager.UpdateInstance(chunkPosition, chunkIndex, instanceList);
+            voxelDataManager.UpdateTypeBuffer(chunkPosition);
 
             instanceList.Dispose();
         }

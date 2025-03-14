@@ -1,0 +1,17 @@
+{
+    "name": "VoxelSimulations",
+    "rootNamespace": "",
+    "references": [
+        "DataManagersAssembly",
+        "DataUpdatorsAssembly"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
