@@ -124,5 +124,11 @@ public abstract partial class VoxelDataManager
 		dirtyChunks.Dispose();
 		stateList.Dispose();
 		typeList.Dispose();
+		typeBuffer.Release();
+	}
+
+	public ComputeBuffer GetTypeBuffer()
+	{
+		return typeBuffer;
 	}
 }

@@ -81,5 +81,21 @@ public abstract partial class QuadInstanceManager
 		instanceBuffer.Release();
 		chunkPositionBuffer.Release();
 		instanceCountBuffer.Release();
+		typeIndexBuffer.Release();
+	}
+
+	public (
+		ComputeBuffer instanceBuffer,
+		ComputeBuffer instanceCountBuffer,
+		ComputeBuffer chunkPositionBuffer,
+		ComputeBuffer typeIndexBuffer
+	) GetRenderBuffers()
+	{
+		return (
+			instanceBuffer,
+			instanceCountBuffer,
+			chunkPositionBuffer,
+			typeIndexBuffer
+		);
 	}
 }

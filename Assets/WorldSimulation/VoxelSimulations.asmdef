@@ -3,7 +3,8 @@
     "rootNamespace": "",
     "references": [
         "DataManagersAssembly",
-        "DataUpdatorsAssembly"
+        "DataUpdatorsAssembly",
+        "QuadRenderer"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
