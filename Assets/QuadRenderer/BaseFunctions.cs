@@ -99,6 +99,7 @@ public partial class QuadRenderer
 	{
 		int numGroup = (instanceBufferCount + WORKGROUP_SIZE - 1) / WORKGROUP_SIZE;
 		int kernel = preprocessShader.FindKernel("PreprocessInstance");
+		preprocessShader.SetVector("_cameraPosition", Camera.main.transform.position);
 		preprocessShader.Dispatch(kernel, numGroup, 1, 1);
 
 		// offset of 4 bytes for args[1]
