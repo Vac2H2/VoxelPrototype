@@ -65,6 +65,7 @@ public partial class QuadRenderer
 		InstanceShader = new Material(Shader.Find("Shader Graphs/InstanceShader"));
 		InstanceShader.SetBuffer("_validInstanceBuffer", validInstanceBuffer);
 		InstanceShader.SetBuffer("_typeBuffer", typeBuffer);
+		InstanceShader.SetMatrix("_TransformationMatrix", transformationMatrix);
 	}
 
 	void InitStructures()

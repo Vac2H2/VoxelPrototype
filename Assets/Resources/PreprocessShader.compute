@@ -42,6 +42,7 @@ StructuredBuffer<int> _typeIndexBuffer;
 AppendStructuredBuffer<CompactInstanceData> _validInstanceBuffer;
 
 float3 _cameraPosition;
+float4x4 _TransformationMatrix;
 
 uint2 GetProjectedCoord(uint3 coord, uint direction)
 {
@@ -99,7 +100,11 @@ void PreprocessInstance (uint3 id : SV_DispatchThreadID)
         quadData.y,
         quadData.z
     );
-    float3 quadCenter = quadPosition + quadScale / 2;
+    float3 quadCenter = quadPosition + quadScale / 2 + chunkPosition;
+    quadCenter 
+    = mul(_TransformationMatrix, quadCenter) 
+    + float3(_TransformationMatrix[0][3], _TransformationMatrix[1][3], _TransformationMatrix[2][3]);
+
     float3 normal = MESH_NORMALS[direction];
     float3 viewDir = _cameraPosition - quadCenter;  
     viewDir = normalize(viewDir);  

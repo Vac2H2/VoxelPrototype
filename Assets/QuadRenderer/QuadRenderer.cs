@@ -17,6 +17,8 @@ public partial class QuadRenderer
 	ComputeBuffer validInstanceBuffer;
 	Material InstanceShader;
 
+	Matrix4x4 transformationMatrix;
+
 	int instanceBufferCount;
 
 	public QuadRenderer(
@@ -24,7 +26,8 @@ public partial class QuadRenderer
 		ComputeBuffer _instanceCountBuffer,
 		ComputeBuffer _chunkPositionBuffer,
 		ComputeBuffer _typeIndexBuffer,
-		ComputeBuffer _typeBuffer
+		ComputeBuffer _typeBuffer,
+		Matrix4x4 _transformationMatrix
 	)
 	{
 		instanceBuffer = _instanceBuffer;
@@ -32,6 +35,7 @@ public partial class QuadRenderer
 		chunkPositionBuffer = _chunkPositionBuffer;
 		typeIndexBuffer = _typeIndexBuffer;
 		typeBuffer = _typeBuffer;
+		transformationMatrix = _transformationMatrix;
 
 		instanceBufferCount = instanceBuffer.count;
 

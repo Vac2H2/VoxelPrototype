@@ -8,8 +8,13 @@ public class WorldSimulation : MonoBehaviour
     QuadManager quadManager;
     VisualDataUpdator visualDataUpdator;
     QuadRenderer quadRenderer;
+
+    Matrix4x4 transformationMatrix;
+
     void Start()
     {
+        transformationMatrix = transform.localToWorldMatrix;
+
         chunkVoxelManager = new ChunkVoxelManager(MaxNumberChunk);
         quadManager = new QuadManager(MaxNumberChunk, MaxNumberBlock);
         visualDataUpdator = new VisualDataUpdator(chunkVoxelManager, quadManager);
@@ -27,7 +32,8 @@ public class WorldSimulation : MonoBehaviour
             instanceCountBuffer,
             chunkPositionBuffer,
             typeIndexBuffer,
-            typeBuffer
+            typeBuffer,
+            transformationMatrix
         );
 
         VoxelDataUpdator.CreateBasicScene(chunkVoxelManager, quadManager);   
