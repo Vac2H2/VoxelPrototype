@@ -100,7 +100,7 @@ void PreprocessInstance (uint3 id : SV_DispatchThreadID)
         quadData.y,
         quadData.z
     );
-    float3 quadCenter = quadPosition + quadScale / 2 + chunkPosition;
+    float3 quadCenter = quadPosition + quadScale / 2 + chunkPosition * 32;
     quadCenter 
     = mul(_TransformationMatrix, quadCenter) 
     + float3(_TransformationMatrix[0][3], _TransformationMatrix[1][3], _TransformationMatrix[2][3]);

@@ -11,16 +11,28 @@ public static partial class VoxelDataUpdator
 
 	public static void CreateBasicScene(
 		VoxelDataManager voxelDataManager,
-		QuadInstanceManager quadInstanceManager
+		QuadInstanceManager quadInstanceManager,
+		int3 start,
+		int3 scale
 	)
 	{
-		int3 chunkPosition = int3.zero;
+		int3 end = start + scale;
+		for (int x = start.x; x < end.x; x++)
+		{
+			for (int y = start.y; y < end.y; y++)
+			{
+				for (int z = start.z; z < end.z; z++)
+				{
+					int3 chunkPosition = new int3(x, y, z);
 
-		voxelDataManager.AddChunk(chunkPosition);
-		quadInstanceManager.AddChunk(chunkPosition);
+					voxelDataManager.AddChunk(chunkPosition);
+					quadInstanceManager.AddChunk(chunkPosition);
 
-		voxelDataManager.FillChunk(chunkPosition, 1u);
+					voxelDataManager.FillChunk(chunkPosition, 1u);
 
-		voxelDataManager.AddDirtyFlag(chunkPosition);
+					voxelDataManager.AddDirtyFlag(chunkPosition);
+				}
+			}
+		}
 	}
 }

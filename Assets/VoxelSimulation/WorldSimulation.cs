@@ -1,4 +1,5 @@
 using UnityEngine;
+using Unity.Mathematics;
 
 public class WorldSimulation : MonoBehaviour
 {
@@ -36,7 +37,12 @@ public class WorldSimulation : MonoBehaviour
             transformationMatrix
         );
 
-        VoxelDataUpdator.CreateBasicScene(chunkVoxelManager, quadManager);   
+        VoxelDataUpdator.CreateBasicScene(
+            chunkVoxelManager,
+            quadManager,
+            new int3(-2, 0, -2),
+            new int3(4, 1, 4)
+        );   
     }
 
     void Update()

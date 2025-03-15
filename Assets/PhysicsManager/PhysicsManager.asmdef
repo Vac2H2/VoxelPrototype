@@ -1,11 +1,9 @@
 {
-    "name": "VoxelSimulations",
+    "name": "PhysicsManager",
     "rootNamespace": "",
     "references": [
-        "DataManagersAssembly",
-        "DataUpdatorsAssembly",
-        "QuadRenderer",
-        "Unity.Mathematics"
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:9bd0739247362c2438115023df97a121"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

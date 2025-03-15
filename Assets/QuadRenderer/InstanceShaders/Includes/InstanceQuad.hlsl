@@ -74,7 +74,7 @@ void GetPositionNormalUV_float(
         (float)quadData.z
     );
     
-    float3 positionBeforeTransform = scaledPosition + chunkOffset + worldPosition;
+    float3 positionBeforeTransform = scaledPosition + chunkOffset + worldPosition * 32;
 
     position 
     = mul(transformationMatrix, positionBeforeTransform) 
