@@ -47,6 +47,7 @@ public partial class QuadRenderer
 		preprocessShader = Resources.Load<ComputeShader>("PreprocessShader");
 		int kernel = preprocessShader.FindKernel("PreprocessInstance");
 
+		preprocessShader.SetMatrix("_TransformationMatrix", transformationMatrix);
 		preprocessShader.SetBuffer(kernel, "_instanceBuffer", instanceBuffer);
 		preprocessShader.SetBuffer(kernel, "_instanceCountBuffer", instanceCountBuffer);
 		preprocessShader.SetBuffer(kernel, "_chunkPositionBuffer", chunkPositionBuffer);
