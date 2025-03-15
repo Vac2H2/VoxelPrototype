@@ -1,5 +1,15 @@
 #pragma kernel PreprocessInstance
 
+static const float3 MESH_NORMALS[6] = 
+{
+    float3(1, 0, 0),
+    float3(-1, 0, 0),
+    float3(0, 1, 0),
+    float3(0, -1, 0),
+    float3(0, 0, 1),
+    float3(0, 0, -1)
+};
+
 struct InstanceData
 {
     uint EncodedQuad;
@@ -30,6 +40,8 @@ StructuredBuffer<int3> _chunkPositionBuffer;
 StructuredBuffer<int> _typeIndexBuffer;
 
 AppendStructuredBuffer<CompactInstanceData> _validInstanceBuffer;
+
+float3 _cameraPosition;
 
 uint2 GetProjectedCoord(uint3 coord, uint direction)
 {
@@ -75,12 +87,31 @@ void PreprocessInstance (uint3 id : SV_DispatchThreadID)
     QuadData quadData = DecodeQuad(instanceData.EncodedQuad);
 
     float direction = instanceData.Direction;
-    
-    CompactInstanceData compactData;
-    compactData.PositionAndScale = quadData;
-    compactData.Direction = direction;
-    compactData.ChunkPosition = chunkPosition;
-    compactData.TypeIndex = typeIndex;
 
-    _validInstanceBuffer.Append(compactData);
+    // visibility
+    float3 quadScale = float3(
+        quadData.xScale,
+        quadData.yScale,
+        quadData.zScale
+    );
+    float3 quadPosition = float3(
+        quadData.x,
+        quadData.y,
+        quadData.z
+    );
+    float3 quadCenter = quadPosition + quadScale / 2;
+    float3 normal = MESH_NORMALS[direction];
+    float3 viewDir = _cameraPosition - quadCenter;  
+    viewDir = normalize(viewDir);  
+    float visibility = dot(viewDir, normal); 
+    if (visibility > 0)
+    {
+        CompactInstanceData compactData;
+        compactData.PositionAndScale = quadData;
+        compactData.Direction = direction;
+        compactData.ChunkPosition = chunkPosition;
+        compactData.TypeIndex = typeIndex;
+
+        _validInstanceBuffer.Append(compactData);
+    }
 }
