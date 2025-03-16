@@ -48,8 +48,8 @@ public abstract partial class VoxelDataManager
 	) GetAABBEnclosedChunkRanges(Bounds bounds)
 	{
 		int3 start = (int3)math.floor((float3)bounds.min);
-		int3 end = (int3)math.floor((float3)bounds.max);
-		int3 scale = start - end + 1;
+		int3 end = (int3)math.ceil((float3)bounds.max);
+		int3 scale = end - start;
 
 		(int3 startChunkPosition, int3 startLocalPosition) = GetChunkAndLocalPosition(start);
 		(int3 endChunkPosition, int3 _) = GetChunkAndLocalPosition(end);
@@ -63,7 +63,6 @@ public abstract partial class VoxelDataManager
 	public static uint GenerateMaskByRange(int2 range)
 	{
 		int length = range.y - range.x;
-		// uint mask = ((1u << length) - 1u) << range.x;
 		uint mask;
 		if (length == 32)
 		{
@@ -79,6 +78,7 @@ public abstract partial class VoxelDataManager
 
 	public NativeList<int3> GetSolidVoxelsInRangeOfChunk(
 		NativeSlice<uint> slice,
+		int3 chunkPosition,
 		int2 rangeX,
 		int2 rangeY,
 		int2 rangeZ
@@ -100,7 +100,8 @@ public abstract partial class VoxelDataManager
 					// Clear the lowest set bit
 					result &= result - 1;
 
-					voxels.Add(new int3(x, y, z));
+					int CHUNK_SIZE = 32;
+					voxels.Add(chunkPosition * CHUNK_SIZE + new int3(x, y, z));
 				}
 			}
 		}
@@ -143,16 +144,21 @@ public abstract partial class VoxelDataManager
 
 					NativeList<int3> voxels = GetSolidVoxelsInRangeOfChunk(
 						state,
-						rangeX[x],
-						rangeY[y],
-						rangeZ[z]
+						new int3(x, y, z),
+						rangeX[x - startChunkPosition.x],
+						rangeY[y - startChunkPosition.y],
+						rangeZ[z - startChunkPosition.z]
 					);
 
 					allVoxels.AddRange(voxels.AsArray());
+
 					voxels.Dispose();
 				}
 			}
 		}
+		rangeX.Dispose();
+		rangeY.Dispose();
+		rangeZ.Dispose();
 
 		return allVoxels;
 	}
@@ -160,15 +166,27 @@ public abstract partial class VoxelDataManager
 	/// <summary>
 	/// Generate a bounds in voxel space.
 	/// </summary>
-	/// <param name="worldPosition">World position</param>
-	/// <param name="voxelSpaceScale">Scales in voxel space. For example, a character width of 2 world voxel</param>
+	/// <param name="bounds">World space bounds</param>
 	/// <returns></returns>
-	public Bounds GenerateVoxelSpaceBounds(float3 worldPosition, float3 voxelSpaceScale)
+	public Bounds ConvertBoundsToVoxelSpace(Bounds bounds)
 	{
-		Vector3 localPosition = worldToLocal.MultiplyPoint3x4(worldPosition);
-		Bounds bounds = new Bounds(localPosition, voxelSpaceScale);
+		Vector3 newCenter = worldToLocal.MultiplyPoint3x4(bounds.center);
 
-		return bounds;
+		Vector3 extents = bounds.extents;
+
+		Vector3 right   = worldToLocal.GetColumn(0) * extents.x;
+		Vector3 up      = worldToLocal.GetColumn(1) * extents.y;
+		Vector3 forward = worldToLocal.GetColumn(2) * extents.z;
+
+		// 3) Compute new extents by summing the absolute values (component-wise):
+		float newExtentX = Mathf.Abs(right.x) + Mathf.Abs(up.x) + Mathf.Abs(forward.x);
+		float newExtentY = Mathf.Abs(right.y) + Mathf.Abs(up.y) + Mathf.Abs(forward.y);
+		float newExtentZ = Mathf.Abs(right.z) + Mathf.Abs(up.z) + Mathf.Abs(forward.z);
+
+		Vector3 newExtents = new Vector3(newExtentX, newExtentY, newExtentZ);
+		Bounds transformedBounds = new Bounds(newCenter, 2f * newExtents);
+
+		return transformedBounds;
 	}
 
 	/// <summary>

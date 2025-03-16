@@ -14,7 +14,7 @@ public class PhysicsManager : MonoBehaviour
 
     void Update()
     {
-        CharacterState state = Protagonist.GetComponent<ProtagonistControl>().GetCharacterState();
+        // CharacterState state = Protagonist.GetComponent<ProtagonistControl>().GetCharacterState();
 
         // Protagonist.transform.position += (Vector3)(state.Speed * Time.deltaTime);
     }
@@ -22,15 +22,15 @@ public class PhysicsManager : MonoBehaviour
     /// <summary>
     /// Given world space bounds get all collided voxels represented by bounds
     /// </summary>
-    /// <param name="position">World position</param>
-    /// <param name="scale">Scales in voxel space. For example, a character width of 2 world voxel</param>
+    /// <param name="bounds">Bounds you want to check in world space</param>
     /// <returns></returns>
-    public NativeArray<Bounds> GetCollidedVoxels(float3 position, float3 scale)
+    public NativeArray<Bounds> GetCollidedVoxels(Bounds bounds)
     {
-        Bounds bounds = voxelDataManager.GenerateVoxelSpaceBounds(position, scale);
-        NativeList<int3> voxels = voxelDataManager.GetSolidVoxelsWithinBounds(bounds);
+        Bounds voxelSpaceBounds = voxelDataManager.ConvertBoundsToVoxelSpace(bounds);
+        NativeList<int3> voxels = voxelDataManager.GetSolidVoxelsWithinBounds(voxelSpaceBounds);
         NativeArray<Bounds> boundsArray = voxelDataManager.ConvertVoxelsIntoBounds(voxels);
 
+        voxels.Dispose();
         return boundsArray;
     } 
 }
