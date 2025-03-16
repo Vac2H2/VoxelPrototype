@@ -17,9 +17,14 @@ public abstract partial class VoxelDataManager
 	protected ComputeBuffer typeBuffer;
 
 	protected int numChunkAdded;
+	protected Matrix4x4 localToWorld;
+	protected Matrix4x4 worldToLocal;
 
-	public VoxelDataManager(int maxNumChunk)
+	public VoxelDataManager(int maxNumChunk, Matrix4x4 _localToWorld)
 	{
+		localToWorld = _localToWorld;
+		worldToLocal = _localToWorld.inverse;
+
 		numChunkAdded = 0;
 		chunkMap = new NativeHashMap<int3, int>(maxNumChunk, Allocator.Persistent);
 		dirtyChunks = new NativeQueue<int3>(Allocator.Persistent);

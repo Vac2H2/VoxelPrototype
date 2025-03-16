@@ -38,4 +38,15 @@ public abstract partial class VoxelDataManager
 			SetTypeSlice(typeSlice, type);
 		}
 	}
+
+	public (int3 chunkPosition, int3 localPosition) GetChunkAndLocalPosition(int3 worldPosition)
+	{
+		const int chunkSize = 32;
+
+		// Convert worldPos to float3 to use math.floor for proper floor division
+		int3 chunkPosition = (int3)math.floor((float3)worldPosition / chunkSize);
+		int3 localPosition = worldPosition - chunkPosition * chunkSize;
+
+		return (chunkPosition, localPosition);
+	}
 }

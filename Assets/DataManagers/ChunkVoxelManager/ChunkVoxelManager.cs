@@ -4,7 +4,7 @@ using Unity.Mathematics;
 
 public partial class ChunkVoxelManager : VoxelDataManager
 {
-	public ChunkVoxelManager(int maxNumChunk) : base(maxNumChunk)
+	public ChunkVoxelManager(int maxNumChunk, Matrix4x4 localToWorld) : base(maxNumChunk, localToWorld)
 	{
 
 	}

@@ -1,3 +1,4 @@
+using Unity.Mathematics;
 using UnityEngine;
 
 public class ProtagonistControl : MonoBehaviour
@@ -7,6 +8,10 @@ public class ProtagonistControl : MonoBehaviour
 
     [Header("Mouse Settings")]
     public float mouseSensitivity = 100f;  // Adjust mouse sensitivity in Inspector
+
+    public float AABBWidth;
+    public float AABBHeight;
+    public float StepHeight;
 
     float pitch = 0f; // Up/Down rotation
     float yaw = 0f;   // Left/Right rotation
@@ -56,6 +61,7 @@ public class ProtagonistControl : MonoBehaviour
             moveDirection += Vector3.down;
 
         characterState.Speed = moveDirection * movementSpeed;
+        characterState.Position = (float3)transform.position;
     }
 
     public CharacterState GetCharacterState()

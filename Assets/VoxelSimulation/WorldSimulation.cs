@@ -16,7 +16,7 @@ public class WorldSimulation : MonoBehaviour
     {
         transformationMatrix = transform.localToWorldMatrix;
 
-        chunkVoxelManager = new ChunkVoxelManager(MaxNumberChunk);
+        chunkVoxelManager = new ChunkVoxelManager(MaxNumberChunk, transformationMatrix);
         quadManager = new QuadManager(MaxNumberChunk, MaxNumberBlock);
         visualDataUpdator = new VisualDataUpdator(chunkVoxelManager, quadManager);
 
@@ -42,7 +42,7 @@ public class WorldSimulation : MonoBehaviour
             quadManager,
             new int3(-2, 0, -2),
             new int3(4, 1, 4)
-        );   
+        );
     }
 
     void Update()
@@ -56,5 +56,10 @@ public class WorldSimulation : MonoBehaviour
         chunkVoxelManager.DestroyBasicStructures();
         quadManager.DestroyBasicStructures();
         quadRenderer.Destroy();
+    }
+
+    public VoxelDataManager GetVoxelDataManager()
+    {
+        return chunkVoxelManager;
     }
 }
