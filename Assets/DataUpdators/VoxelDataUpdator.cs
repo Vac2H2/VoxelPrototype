@@ -4,11 +4,6 @@ using Unity.Mathematics;
 
 public static partial class VoxelDataUpdator
 {
-	// public static void AddVoxel(VoxelDataManager voxelDataManager, int3 position)
-	// {
-
-	// }
-
 	public static void CreateBasicScene(
 		VoxelDataManager voxelDataManager,
 		QuadInstanceManager quadInstanceManager,
@@ -34,5 +29,24 @@ public static partial class VoxelDataUpdator
 				}
 			}
 		}
+	}
+
+	public static void AddRectangle(
+		VoxelDataManager voxelDataManager,
+		QuadInstanceManager quadInstanceManager,
+		int3 position,
+		int3 scale
+	)
+	{
+		
+	}
+	public static void AddStaircase(
+		VoxelDataManager voxelDataManager,
+		QuadInstanceManager quadInstanceManager,
+		int3 position,
+		int3 scale
+	)
+	{
+
 	}
 }
