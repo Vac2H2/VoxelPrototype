@@ -9,10 +9,6 @@ public class ProtagonistControl : MonoBehaviour
     [Header("Mouse Settings")]
     public float mouseSensitivity = 100f;  // Adjust mouse sensitivity in Inspector
 
-    public float AABBWidth;
-    public float AABBHeight;
-    public float StepHeight;
-
     float pitch = 0f; // Up/Down rotation
     float yaw = 0f;   // Left/Right rotation
 
@@ -67,5 +63,10 @@ public class ProtagonistControl : MonoBehaviour
     public CharacterState GetCharacterState()
     {
         return characterState;
+    }
+
+    public void UpdateCharacterState(CharacterState state)
+    {
+        characterState = state;
     }
 }

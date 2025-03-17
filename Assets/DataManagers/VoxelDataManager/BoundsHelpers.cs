@@ -12,6 +12,7 @@ public abstract partial class VoxelDataManager
 		if (totalLength <= firstChunkLength)
 		{
 			ranges.Add(new int2(x, x + totalLength));
+			return ranges;
 		}
 		else
 		{
@@ -128,11 +129,11 @@ public abstract partial class VoxelDataManager
 		) = GetAABBEnclosedChunkRanges(bounds);
 
 		NativeList<int3> allVoxels = new NativeList<int3>(24, Allocator.Persistent);
-		for (int x = startChunkPosition.x; x < endChunkPosition.x + 1; x++)
+		for (int x = startChunkPosition.x; x < startChunkPosition.x + rangeX.Length; x++)
 		{
-			for (int y = startChunkPosition.y; y < endChunkPosition.y + 1; y++)
+			for (int y = startChunkPosition.y; y < startChunkPosition.y + rangeY.Length; y++)
 			{
-				for (int z = startChunkPosition.z; z < endChunkPosition.z + 1; z++)
+				for (int z = startChunkPosition.z; z < startChunkPosition.z + rangeZ.Length; z++)
 				{
 					(bool found, NativeSlice<uint> state, NativeSlice<uint> _)
 					= GetChunkSlice(new int3(x, y, z));

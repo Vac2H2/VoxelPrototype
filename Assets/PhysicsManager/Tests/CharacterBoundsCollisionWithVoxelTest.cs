@@ -6,11 +6,13 @@ public class CharacterBoundsCollisionWithVoxelTest : MonoBehaviour
     public GameObject PhysicsManagerObject;
     PhysicsManager physicsManager;
 
+    public GameObject Protagonist;
+
     Bounds bounds;
     void Start()
     {
         physicsManager = PhysicsManagerObject.GetComponent<PhysicsManager>();
-        bounds = GetComponent<BoxCollider>().bounds;
+        bounds = Protagonist.GetComponent<BoxCollider>().bounds;
     }
 
     void Update()
@@ -27,7 +29,7 @@ public class CharacterBoundsCollisionWithVoxelTest : MonoBehaviour
             return;
         }
 
-        bounds = GetComponent<BoxCollider>().bounds;
+        bounds = Protagonist.GetComponent<BoxCollider>().bounds;
         NativeArray<Bounds> voxelBounds = physicsManager.GetCollidedVoxels(bounds);
 
         Gizmos.color = Color.green;
