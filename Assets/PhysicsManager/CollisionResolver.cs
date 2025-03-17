@@ -5,11 +5,11 @@ using UnityEngine;
 
 public partial class PhysicsManager : MonoBehaviour
 {
-	public Bounds ResolveCollisions(float3 speed, Bounds bounds)
+	public Bounds ResolveCollisions(Rigidbody rigidbody, Bounds bounds)
 	{
-		bounds = ResolveCollisionY(speed, bounds);
-		bounds = ResolveCollisionX(speed, bounds);
-		bounds = ResolveCollisionZ(speed, bounds);
+		bounds = ResolveCollisionY(rigidbody, bounds);
+		// bounds = ResolveCollisionX(speed, bounds);
+		// bounds = ResolveCollisionZ(speed, bounds);
 
 		return bounds;
 	}
@@ -100,37 +100,50 @@ public partial class PhysicsManager : MonoBehaviour
 		return (highest, lowest);
 	}
 
-	public Bounds ResolveCollisionY(float3 speed, Bounds bounds)
+	public Bounds ResolveCollisionY(Rigidbody rigidbody, Bounds bounds)
 	{
+		float3 speed = rigidbody.linearVelocity;
+
 		if (speed.y == 0)
 		{
 			return bounds;
 		}
 
 		Bounds oldBounds = bounds;
-		bounds.center += (Vector3)(speed * Time.deltaTime);
+
+		float displacementY = speed.y * Time.deltaTime;
+		bounds.center += new Vector3(0, displacementY, 0);
+
 		NativeArray<Bounds> voxelBounds = GetCollidedVoxels(bounds);
 
 		if (voxelBounds.Length > 0)
 		{
 			(Bounds highest, Bounds lowest) = SortBoundsInY(voxelBounds);
+			voxelBounds.Dispose();
+
 			if (speed.y > 0)
 			{
 				float availableRoom = lowest.min.y - oldBounds.max.y;
 				oldBounds.center += new Vector3(0, availableRoom, 0);
+
+				speed.y = 0;
+				rigidbody.linearVelocity = speed;
+
 				return oldBounds;
 			}
 			else
 			{
 				float availableRoom = oldBounds.min.y - highest.max.y;
 				oldBounds.center += new Vector3(0, -availableRoom, 0);
+
+				speed.y = 0;
+				rigidbody.linearVelocity = speed;
+
 				return oldBounds;
-			}
+			} 
 		}
-		else
-		{
-			return bounds;
-		}
+		voxelBounds.Dispose();
+		return bounds;
 	}
 
 	public Bounds ResolveCollisionX(float3 speed, Bounds bounds)

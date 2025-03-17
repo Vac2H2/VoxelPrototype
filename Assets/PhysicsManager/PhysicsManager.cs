@@ -15,11 +15,11 @@ public partial class PhysicsManager : MonoBehaviour
 
     void Update()
     {
-        // CharacterState state = Protagonist.GetComponent<ProtagonistControl>().GetCharacterState();
-        // float3 gravity = -9.81f;
-        // state.Speed += gravity * Time.deltaTime;
-        // Protagonist.transform.position += (Vector3)(state.Speed * Time.deltaTime);
-        // state.Position = Protagonist.transform.position;
+        Bounds bounds = Protagonist.GetComponent<BoxCollider>().bounds;
+        Rigidbody rb = Protagonist.GetComponent<Rigidbody>();
+
+        Bounds nextBounds = ResolveCollisions(rb, bounds);
+        rb.MovePosition(nextBounds.center);
         // Protagonist.GetComponent<ProtagonistControl>().UpdateCharacterState(state);
     }
 }
