@@ -10,11 +10,6 @@ public abstract partial class VoxelDataManager
 	)
 	{
 		(int3 chunkPosition, int3 localPosition) = GetChunkAndLocalPosition(worldPosition);
-		if (!chunkMap.TryGetValue(chunkPosition, out int chunkIndex))
-		{
-			AddChunk(chunkPosition);
-		}
-
 		(bool found, NativeSlice<uint> state, NativeSlice<uint> type) = GetChunkSlice(chunkPosition);
 
 		int3 endLocalPosition = localPosition + scale;
@@ -26,7 +21,5 @@ public abstract partial class VoxelDataManager
 				state[y + 32 * z] |= mask;
 			}
 		}
-
-		AddDirtyFlag(chunkPosition);
 	}
 }

@@ -55,6 +55,8 @@ public abstract partial class VoxelDataManager
 			stateList.AddRange(state);
 			typeList.AddRange(type);
 
+			numChunkAdded++;
+			
 			return true;
 		}
 		return false;
