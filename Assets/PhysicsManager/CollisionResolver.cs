@@ -104,12 +104,8 @@ public partial class PhysicsManager : MonoBehaviour
 	{
 		float3 speed = rigidbody.linearVelocity;
 
-		if (speed.y == 0)
-		{
-			return bounds;
-		}
-
 		Bounds oldBounds = bounds;
+		Bounds adjustedBounds = oldBounds;
 
 		float displacementY = speed.y * Time.deltaTime;
 		bounds.center += new Vector3(0, displacementY, 0);
@@ -119,31 +115,31 @@ public partial class PhysicsManager : MonoBehaviour
 		if (voxelBounds.Length > 0)
 		{
 			(Bounds highest, Bounds lowest) = SortBoundsInY(voxelBounds);
-			voxelBounds.Dispose();
 
-			if (speed.y > 0)
+			if (lowest.center.y > oldBounds.center.y)
 			{
 				float availableRoom = lowest.min.y - oldBounds.max.y;
-				oldBounds.center += new Vector3(0, availableRoom, 0);
+				adjustedBounds.center = oldBounds.center + new Vector3(0, availableRoom, 0);
 
 				speed.y = 0;
 				rigidbody.linearVelocity = speed;
-
-				return oldBounds;
 			}
-			else
+			if (highest.center.y < oldBounds.center.y)
 			{
 				float availableRoom = oldBounds.min.y - highest.max.y;
-				oldBounds.center += new Vector3(0, -availableRoom, 0);
+				adjustedBounds.center = oldBounds.center + new Vector3(0, -availableRoom, 0);
 
 				speed.y = 0;
 				rigidbody.linearVelocity = speed;
-
-				return oldBounds;
-			} 
+			}
 		}
+		else
+		{
+			adjustedBounds = bounds; // next position
+		}
+
 		voxelBounds.Dispose();
-		return bounds;
+		return adjustedBounds;
 	}
 
 	public Bounds ResolveCollisionX(float3 speed, Bounds bounds)
