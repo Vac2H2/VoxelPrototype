@@ -13,6 +13,7 @@ public class ProtagonistControl : MonoBehaviour
     float yaw = 0f;   // Left/Right rotation
 
     public Transform CameraTransform;
+    public float3 velocity;
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -55,10 +56,7 @@ public class ProtagonistControl : MonoBehaviour
             moveDirection += Vector3.down;
         
 
-
-        Rigidbody rb = GetComponent<Rigidbody>();
-        float3 velocity = moveDirection * movementSpeed;
-        float3 oldVelocity = rb.linearVelocity;
-        rb.linearVelocity = new float3(velocity.x, oldVelocity.y, velocity.z);
+        float3 newVelocity = moveDirection * movementSpeed;
+        velocity = new float3(newVelocity.x, velocity.y, newVelocity.z);
     }
 }

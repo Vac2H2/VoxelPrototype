@@ -5,14 +5,17 @@ using UnityEngine;
 
 public partial class PhysicsManager : MonoBehaviour
 {
-	public Bounds ResolveCollisions(Rigidbody rigidbody, Bounds bounds)
+	public (float3 nextVelocity, Bounds nextBounds) ResolveCollisions(float3 velocity, Bounds bounds)
 	{
-		bounds = ResolveCollisionY(rigidbody, bounds);
-		// bounds = ResolveCollisionX(speed, bounds);
-		// bounds = ResolveCollisionZ(speed, bounds);
+		Bounds nextBounds;
+		float3 nextVelocity;
+		(nextVelocity, nextBounds) = ResolveCollisionY(velocity, bounds);
+		(nextVelocity, nextBounds) = ResolveCollisionX(nextVelocity, nextBounds);
+		(nextVelocity, nextBounds) = ResolveCollisionZ(nextVelocity, nextBounds);
 
-		return bounds;
+		return (nextVelocity, nextBounds);
 	}
+
 	/// <summary>
 	/// Given world space bounds get all collided voxels represented by bounds
 	/// </summary>
@@ -100,111 +103,178 @@ public partial class PhysicsManager : MonoBehaviour
 		return (highest, lowest);
 	}
 
-	public Bounds ResolveCollisionY(Rigidbody rigidbody, Bounds bounds)
+	public (float3 updatedVelocity, Bounds updatedBounds) ResolveCollisionY(float3 velocity, Bounds bounds)
 	{
-		float3 speed = rigidbody.linearVelocity;
+		float3 speed = velocity;
 
-		Bounds oldBounds = bounds;
-		Bounds adjustedBounds = oldBounds;
+		if (speed.y == 0)
+		{
+			return (speed, bounds);
+		}
 
+		// Generate next bounds in Y axis
+		Bounds nextBounds = bounds;
 		float displacementY = speed.y * Time.deltaTime;
-		bounds.center += new Vector3(0, displacementY, 0);
+		nextBounds.center += new Vector3(0, displacementY, 0);
 
-		NativeArray<Bounds> voxelBounds = GetCollidedVoxels(bounds);
+		// find collided voxels in next bounds
+		NativeArray<Bounds> voxelBounds = GetCollidedVoxels(nextBounds);
 
 		if (voxelBounds.Length > 0)
 		{
 			(Bounds highest, Bounds lowest) = SortBoundsInY(voxelBounds);
 
-			if (lowest.center.y > oldBounds.center.y)
+			if (speed.y > 0)
 			{
-				float availableRoom = lowest.min.y - oldBounds.max.y;
-				adjustedBounds.center = oldBounds.center + new Vector3(0, availableRoom, 0);
+				float availableRoom = (lowest.min.y - 0.01f) - bounds.max.y;
+				nextBounds.center = bounds.center + new Vector3(0, availableRoom, 0);
 
 				speed.y = 0;
-				rigidbody.linearVelocity = speed;
+				velocity = speed;
 			}
-			if (highest.center.y < oldBounds.center.y)
+			else 
 			{
-				float availableRoom = oldBounds.min.y - highest.max.y;
-				adjustedBounds.center = oldBounds.center + new Vector3(0, -availableRoom, 0);
+				float availableRoom = bounds.min.y - (highest.max.y + 0.01f);
+				nextBounds.center = bounds.center + new Vector3(0, -availableRoom, 0);
 
 				speed.y = 0;
-				rigidbody.linearVelocity = speed;
+				velocity = speed;
 			}
-		}
-		else
-		{
-			adjustedBounds = bounds; // next position
 		}
 
 		voxelBounds.Dispose();
-		return adjustedBounds;
+		return (velocity, nextBounds);
 	}
 
-	public Bounds ResolveCollisionX(float3 speed, Bounds bounds)
+	public (bool stepped, Bounds steppedBounds) ResolveStepping(Bounds bounds, NativeArray<Bounds> voxelBounds)
 	{
+		bool stepped = false;
+		Bounds nextBounds = bounds;
+
+		if (voxelBounds.Length > 0)
+		{
+			(Bounds highest, Bounds lowest) = SortBoundsInY(voxelBounds);
+
+			float availableRoom = highest.max.y - bounds.min.y;
+			float maxStepHeight = 0.8f;
+			if (maxStepHeight > availableRoom)
+			{
+				nextBounds.center = bounds.center + new Vector3(0, availableRoom, 0);
+
+				NativeArray<Bounds> voxelCollisionsAfterStep = GetCollidedVoxels(nextBounds);
+
+				if (voxelCollisionsAfterStep.Length == 0)
+				{
+					stepped = true;
+				}
+				else
+				{
+					// set to original
+					nextBounds = bounds;
+				}
+
+				voxelCollisionsAfterStep.Dispose();
+			}
+		}
+		return (stepped, nextBounds);
+	}
+
+	public (float3 updatedVelocity, Bounds updatedBounds) ResolveCollisionX(float3 velocity, Bounds bounds)
+	{
+		float3 speed = velocity;
+
 		if (speed.x == 0)
 		{
-			return bounds;
+			return (speed, bounds);
 		}
 
-		Bounds oldBounds = bounds;
-		bounds.center += (Vector3)(speed * Time.deltaTime);
-		NativeArray<Bounds> voxelBounds = GetCollidedVoxels(bounds);
+		// Generate next bounds in X axis
+		Bounds nextBounds = bounds;
+		float displacementX = speed.x * Time.deltaTime;
+		nextBounds.center += new Vector3(displacementX, 0, 0);
+
+		// find collided voxels in next bounds
+		NativeArray<Bounds> voxelBounds = GetCollidedVoxels(nextBounds);
 
 		if (voxelBounds.Length > 0)
 		{
+			// can step up?
+			(bool stepped, Bounds steppedBounds) = ResolveStepping(nextBounds, voxelBounds);
+			if (stepped)
+			{
+				voxelBounds.Dispose();
+				return (velocity, steppedBounds);
+			}
+			
 			(Bounds highest, Bounds lowest) = SortBoundsInX(voxelBounds);
+
 			if (speed.x > 0)
 			{
-				float availableRoom = lowest.min.x - oldBounds.max.x;
-				oldBounds.center += new Vector3(availableRoom, 0, 0);
-				return oldBounds;
+				float availableRoom = (lowest.min.x - 0.01f) - bounds.max.x;
+				nextBounds.center = bounds.center + new Vector3(availableRoom, 0, 0);
 			}
 			else
 			{
-				float availableRoom = oldBounds.min.x - highest.max.x;
-				oldBounds.center += new Vector3(-availableRoom, 0, 0);
-				return oldBounds;
+				float availableRoom = bounds.min.x - (highest.max.x + 0.01f);
+				nextBounds.center = bounds.center + new Vector3(-availableRoom, 0, 0);
 			}
-		}
-		else
-		{
-			return bounds;
-		}
-	}
-	
-	public Bounds ResolveCollisionZ(float3 speed, Bounds bounds)
-	{
-		if (speed.z == 0)
-		{
-			return bounds;
+
+			speed.x = 0;
+			velocity = speed;
 		}
 
-		Bounds oldBounds = bounds;
-		bounds.center += (Vector3)(speed * Time.deltaTime);
-		NativeArray<Bounds> voxelBounds = GetCollidedVoxels(bounds);
+		voxelBounds.Dispose();
+		return (velocity, nextBounds);
+	}
+	
+	public (float3 updatedVelocity, Bounds updatedBounds) ResolveCollisionZ(float3 velocity, Bounds bounds)
+	{
+		float3 speed = velocity;
+
+		if (speed.z == 0)
+		{
+			return (speed, bounds);
+		}
+
+		// Generate next bounds in Y axis
+		Bounds nextBounds = bounds;
+		float displacementZ = speed.z * Time.deltaTime;
+		nextBounds.center += new Vector3(0, 0, displacementZ);
+
+		// find collided voxels in next bounds
+		NativeArray<Bounds> voxelBounds = GetCollidedVoxels(nextBounds);
 
 		if (voxelBounds.Length > 0)
 		{
+			// can step up?
+			(bool stepped, Bounds steppedBounds) = ResolveStepping(nextBounds, voxelBounds);
+			if (stepped)
+			{
+				voxelBounds.Dispose();
+				return (velocity, steppedBounds);
+			}
+
 			(Bounds highest, Bounds lowest) = SortBoundsInZ(voxelBounds);
+
 			if (speed.z > 0)
 			{
-				float availableRoom = lowest.min.z - oldBounds.max.z;
-				oldBounds.center += new Vector3(0, 0, availableRoom);
-				return oldBounds;
+				float availableRoom = (lowest.min.z - 0.01f) - bounds.max.z;
+				nextBounds.center = bounds.center + new Vector3(0, 0, availableRoom);
+
+				speed.z = 0;
+				velocity = speed;
 			}
-			else
+			else 
 			{
-				float availableRoom = oldBounds.min.z - highest.max.z;
-				oldBounds.center += new Vector3(0, 0, -availableRoom);
-				return oldBounds;
+				float availableRoom = bounds.min.z - (highest.max.z + 0.01f);
+				nextBounds.center = bounds.center + new Vector3(0, 0, -availableRoom);
+
+				speed.z = 0;
+				velocity = speed;
 			}
 		}
-		else
-		{
-			return bounds;
-		}
+
+		voxelBounds.Dispose();
+		return (velocity, nextBounds);
 	}
 }
