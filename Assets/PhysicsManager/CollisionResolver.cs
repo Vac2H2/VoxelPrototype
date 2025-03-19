@@ -126,7 +126,7 @@ public partial class PhysicsManager : MonoBehaviour
 
 			if (speed.y > 0)
 			{
-				float availableRoom = (lowest.min.y - 0.01f) - bounds.max.y;
+				float availableRoom = (lowest.min.y - 0.0001f) - bounds.max.y;
 				nextBounds.center = bounds.center + new Vector3(0, availableRoom, 0);
 
 				speed.y = 0;
@@ -134,7 +134,7 @@ public partial class PhysicsManager : MonoBehaviour
 			}
 			else 
 			{
-				float availableRoom = bounds.min.y - (highest.max.y + 0.01f);
+				float availableRoom = bounds.min.y - (highest.max.y + 0.0001f);
 				nextBounds.center = bounds.center + new Vector3(0, -availableRoom, 0);
 
 				speed.y = 0;
