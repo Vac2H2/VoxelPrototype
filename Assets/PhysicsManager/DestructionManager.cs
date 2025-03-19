@@ -6,10 +6,12 @@ public class DestructionManager : MonoBehaviour
 {
     public struct ProjectileData
     {
+        public float3 InitPosition;
         public float3 Position;
         public float3 Direction;
         public float Speed;
         public float Radius;
+        public float MaxDistance;
     }
 
     VoxelDataManager voxelDataManager;

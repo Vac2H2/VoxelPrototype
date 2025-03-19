@@ -24,6 +24,12 @@ public class Projectile : MonoBehaviour
 	void FixedUpdate()
 	{
 		projectileData.Position = transform.position;
+		if (Vector3.Distance(projectileData.InitPosition, projectileData.Position) > projectileData.MaxDistance)
+		{
+			Destroy(gameObject);
+			return;
+		}
+		
 		if (voxelDataManager.CheckPositionIsSolid(projectileData.Position))
 		{
 			destructionManager.HandleProjectileHit(projectileData);
