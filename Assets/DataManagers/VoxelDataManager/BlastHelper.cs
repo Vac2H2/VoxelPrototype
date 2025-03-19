@@ -6,6 +6,8 @@ public abstract partial class VoxelDataManager
 {
 	public bool CheckPositionIsSolid(float3 worldPosition)
 	{
+		worldPosition = worldToLocal.MultiplyPoint(worldPosition);
+
 		int3 discretePosition = (int3)math.floor(worldPosition);
 		(int3 chunkPosition, int3 localPosition) = GetChunkAndLocalPosition(discretePosition);
 
@@ -21,6 +23,8 @@ public abstract partial class VoxelDataManager
 
 	public void UpdateSingleVoxel(float3 worldPosition, bool isAdd, uint blockType)
 	{
+		worldPosition = worldToLocal.MultiplyPoint(worldPosition);
+
 		int3 discretePosition = (int3)math.floor(worldPosition);
 		(int3 chunkPosition, int3 localPosition) = GetChunkAndLocalPosition(discretePosition);
 
@@ -40,5 +44,7 @@ public abstract partial class VoxelDataManager
 		{
 			state[localPosition.y + 32 * localPosition.z] &= ~mask;
 		}
+
+		AddDirtyFlag(chunkPosition);
 	}
 }

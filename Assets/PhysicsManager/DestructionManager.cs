@@ -14,11 +14,12 @@ public class DestructionManager : MonoBehaviour
         public float MaxDistance;
     }
 
+    public WorldSimulation worldSimulation;
     VoxelDataManager voxelDataManager;
 
     void Start()
     {
-        voxelDataManager = GetComponentInParent<WorldSimulation>().GetVoxelDataManager();
+        voxelDataManager = worldSimulation.GetVoxelDataManager();
     }
 
     void Update()

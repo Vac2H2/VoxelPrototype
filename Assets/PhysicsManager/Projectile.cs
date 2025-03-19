@@ -18,7 +18,7 @@ public class Projectile : MonoBehaviour
 
 	void Update()
 	{
-		
+
 	}
 
 	void FixedUpdate()
@@ -29,11 +29,20 @@ public class Projectile : MonoBehaviour
 			Destroy(gameObject);
 			return;
 		}
-		
-		if (voxelDataManager.CheckPositionIsSolid(projectileData.Position))
+
+		if (voxelDataManager.CheckPositionIsSolid(transform.position))
 		{
 			destructionManager.HandleProjectileHit(projectileData);
 			Destroy(gameObject);
 		}
-    }
+	}
+
+    // void OnDrawGizmos()
+    // {
+    //     Gizmos.color = Color.green;
+		
+	// 	int3 discretePosition = (int3)math.floor(projectileData.Position);
+	// 	Gizmos.DrawWireCube((float3)discretePosition + 0.5f, Vector3.one * 0.25f);
+        
+    // }
 }

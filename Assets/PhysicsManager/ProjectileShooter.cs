@@ -16,13 +16,20 @@ public class ProjectileShooter : MonoBehaviour
         {
             GameObject projectile = Instantiate(ProjectilePrefab);
             Projectile projectileComp = projectile.GetComponent<Projectile>();
+
             projectileComp.voxelDataManager = voxelDataManager;
             projectileComp.destructionManager = destructionManager;
+
+            Vector3 cameraPosition = Camera.main.transform.position;
+            Vector3 cameraForward = Camera.main.transform.forward;
+
+            projectile.transform.position = cameraPosition;
+            
             projectileComp.projectileData = new DestructionManager.ProjectileData
             {
-                InitPosition = transform.position,
-                Position = transform.position,
-                Direction = transform.forward,
+                InitPosition = cameraPosition,
+                Position = cameraPosition,
+                Direction = cameraForward,
                 MaxDistance = 50f,
                 Speed = 1f
             };

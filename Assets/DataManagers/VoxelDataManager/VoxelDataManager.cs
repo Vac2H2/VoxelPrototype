@@ -40,6 +40,11 @@ public abstract partial class VoxelDataManager
 		typeBuffer.SetData(initTypeArray);
 	}
 
+	public Matrix4x4 GetWorldToLocalMatrix()
+	{
+		return worldToLocal;
+	}
+
 	/// <summary>
 	/// Add a chunk to data structure
 	/// </summary>
@@ -56,7 +61,7 @@ public abstract partial class VoxelDataManager
 			typeList.AddRange(type);
 
 			numChunkAdded++;
-			
+
 			return true;
 		}
 		return false;
