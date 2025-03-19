@@ -1735,7 +1735,7 @@
     "m_TessellationMaxDisplacement": 0.009999999776482582,
     "m_DebugSymbols": false,
     "m_Version": 2,
-    "inspectorFoldoutMask": 0
+    "inspectorFoldoutMask": 1
 }
 
 {
@@ -1972,7 +1972,7 @@
     "m_ObjectId": "e1bd3b8f242c4515980b8485eae8f2a4",
     "m_Title": "SampleTextureArray",
     "m_Position": {
-        "x": -1059.0,
+        "x": -1059.0001220703125,
         "y": 436.0
     }
 }

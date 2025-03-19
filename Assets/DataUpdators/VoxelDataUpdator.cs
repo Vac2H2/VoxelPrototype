@@ -8,7 +8,8 @@ public static partial class VoxelDataUpdator
 		VoxelDataManager voxelDataManager,
 		QuadInstanceManager quadInstanceManager,
 		int3 start,
-		int3 scale
+		int3 scale,
+		uint type
 	)
 	{
 		int3 end = start + scale;
@@ -23,7 +24,7 @@ public static partial class VoxelDataUpdator
 					voxelDataManager.AddChunk(chunkPosition);
 					quadInstanceManager.AddChunk(chunkPosition);
 
-					voxelDataManager.FillChunk(chunkPosition, 1u);
+					voxelDataManager.FillChunk(chunkPosition, type);
 
 					voxelDataManager.AddDirtyFlag(chunkPosition);
 				}
@@ -35,14 +36,15 @@ public static partial class VoxelDataUpdator
 		VoxelDataManager voxelDataManager,
 		QuadInstanceManager quadInstanceManager,
 		int3 worldPosition,
-		int3 scale
+		int3 scale,
+		uint blockType
 	)
 	{
 		(int3 chunkPosition, int3 localPosition) = voxelDataManager.GetChunkAndLocalPosition(worldPosition);
 		voxelDataManager.AddChunk(chunkPosition);
 		quadInstanceManager.AddChunk(chunkPosition);
 
-		voxelDataManager.AddRectangle(worldPosition, scale);
+		voxelDataManager.AddRectangle(worldPosition, scale, blockType);
 
 		voxelDataManager.AddDirtyFlag(chunkPosition);
 	}
@@ -51,12 +53,13 @@ public static partial class VoxelDataUpdator
 		VoxelDataManager voxelDataManager,
 		QuadInstanceManager quadInstanceManager,
 		int3 worldPosition,
-		int3 scale
+		int3 scale,
+		uint blockType
 	)
 	{
-		AddRectangle(voxelDataManager, quadInstanceManager, worldPosition, scale);
-		AddRectangle(voxelDataManager, quadInstanceManager, worldPosition + new int3(1, 1, 0), scale);
-		AddRectangle(voxelDataManager, quadInstanceManager, worldPosition + new int3(2, 2, 0), scale);
-		AddRectangle(voxelDataManager, quadInstanceManager, worldPosition + new int3(3, 3, 0), scale);
+		AddRectangle(voxelDataManager, quadInstanceManager, worldPosition, scale, blockType);
+		AddRectangle(voxelDataManager, quadInstanceManager, worldPosition + new int3(1, 1, 0), scale, blockType);
+		AddRectangle(voxelDataManager, quadInstanceManager, worldPosition + new int3(2, 2, 0), scale, blockType);
+		AddRectangle(voxelDataManager, quadInstanceManager, worldPosition + new int3(3, 3, 0), scale, blockType);
 	}
 }

@@ -49,7 +49,7 @@ void GetPositionNormalUV_float(
     out float typeIndex)
 {
     CompactInstanceData instanceData = _validInstanceBuffer[instanceID];
-    typeIndex = instanceData.TypeIndex;
+    typeIndex = instanceData.TypeIndex + 0.5;
     int3 worldPosition = instanceData.ChunkPosition;
 
     QuadData quadData = instanceData.PositionAndScale;

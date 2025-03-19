@@ -41,22 +41,24 @@ public class WorldSimulation : MonoBehaviour
             chunkVoxelManager,
             quadManager,
             new int3(-2, 0, -2),
-            new int3(4, 1, 4)
+            new int3(4, 1, 4),
+            2u
         );
 
         VoxelDataUpdator.AddStaircase(
             chunkVoxelManager,
             quadManager,
             new int3(0, 32, 0),
-            new int3(4, 1, 4)
+            new int3(4, 1, 4),
+            3u
         );
 
-        VoxelDataUpdator.AddRectangle(
-            chunkVoxelManager,
-            quadManager,
-            new int3(5, 32, 5),
-            new int3(8, 8, 8)
-        );
+        // VoxelDataUpdator.AddRectangle(
+        //     chunkVoxelManager,
+        //     quadManager,
+        //     new int3(5, 32, 5),
+        //     new int3(8, 8, 8)
+        // );
     }
 
     void Update()

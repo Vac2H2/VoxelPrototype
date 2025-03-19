@@ -23,7 +23,7 @@ public abstract partial class VoxelDataManager
 			{
 				for (int z = 0; z < 32; z++)
 				{
-					type[y + 32 * z] = value;
+					type[x + 32 * y + 32 * 32 * z] = value;
 				}
 			}
 		}
