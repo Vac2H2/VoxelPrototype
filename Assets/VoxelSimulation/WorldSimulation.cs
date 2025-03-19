@@ -53,12 +53,13 @@ public class WorldSimulation : MonoBehaviour
             3u
         );
 
-        // VoxelDataUpdator.AddRectangle(
-        //     chunkVoxelManager,
-        //     quadManager,
-        //     new int3(5, 32, 5),
-        //     new int3(8, 8, 8)
-        // );
+        VoxelDataUpdator.AddRectangle(
+            chunkVoxelManager,
+            quadManager,
+            new int3(5, 32, 5),
+            new int3(26, 26, 4),
+            4u
+        );
     }
 
     void Update()
