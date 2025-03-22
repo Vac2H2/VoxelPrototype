@@ -90,16 +90,16 @@ public abstract partial class VoxelDataManager
 			{
 				uint stateData = state[y + 32 * z];
 
+				// Debug.Log((independentStart.y + y - rangeY.x) + 32 * (independentStart.z + z - rangeZ.x));
+				// Debug.Log(independentStart.y);
 				uint independentData
-				= independentState[(independentStart.y + y - rangeY.x) + 32 * (independentStart.z + z - rangeZ.x)];
+				= independentState[independentStart.y + y - rangeY.x + 32 * (independentStart.z + z - rangeZ.x)];
 
 				independentData >>= independentStart.x;
 				independentData <<= rangeX.x;
 
 				uint mask = GenerateMaskByRange(rangeX);
 				stateData &= mask;
-
-				Debug.Log(stateData & independentData);
 
 				state[y + 32 * z] |= stateData & independentData;
 			}
@@ -116,19 +116,28 @@ public abstract partial class VoxelDataManager
 			NativeList<int2> rangeZ
 		) = GetAABBEnclosedChunkRanges(bounds);
 
+		// Debug.Log($"startPos {startChunkPosition}");
+		// Debug.Log($"endPos {endChunkPosition}");
+
 		int3 independentStart = int3.zero;
-		for (int x = startChunkPosition.x; x < endChunkPosition.x; x++)
+		for (int x = startChunkPosition.x; x < endChunkPosition.x + 1; x++)
 		{
-			for (int y = startChunkPosition.y; y < endChunkPosition.y; y++)
+			independentStart.y = 0;
+			for (int y = startChunkPosition.y; y < endChunkPosition.y + 1; y++)
 			{
-				for (int z = startChunkPosition.z; z < endChunkPosition.z; z++)
+				independentStart.z = 0;
+				for (int z = startChunkPosition.z; z < endChunkPosition.z + 1; z++)
 				{
 					(bool found, NativeSlice<uint> state, NativeSlice<uint> type)
 					= GetChunkSlice(new int3(x, y, z));
 
 					if (!found)
 					{
-						independentStart.z += rangeZ[z - startChunkPosition.z].y - rangeZ[z - startChunkPosition.z].x;
+						independentStart = new int3(
+							independentStart.x,
+							independentStart.y,
+							rangeZ[z - startChunkPosition.z].y - rangeZ[z - startChunkPosition.z].x + independentStart.z
+						);
 						continue;
 					}
 
@@ -143,14 +152,26 @@ public abstract partial class VoxelDataManager
 						rangeZ[z - startChunkPosition.z]
 					);
 
-					independentStart.z += rangeZ[z - startChunkPosition.z].y - rangeZ[z - startChunkPosition.z].x;
-
 					// Debug.Log($"{x} {y} {z}");
 					AddDirtyFlag(new int3(x, y, z));
+
+					independentStart = new int3(
+						independentStart.x,
+						independentStart.y,
+						rangeZ[z - startChunkPosition.z].y - rangeZ[z - startChunkPosition.z].x + independentStart.z
+					);
 				}
-				independentStart.y += rangeY[y - startChunkPosition.y].y - rangeY[y - startChunkPosition.y].x;
+				independentStart = new int3(
+					independentStart.x,
+					rangeY[y - startChunkPosition.y].y - rangeY[y - startChunkPosition.y].x + independentStart.y,
+					independentStart.z
+				);
 			}
-			independentStart.x += rangeX[x - startChunkPosition.x].y - rangeX[x - startChunkPosition.x].x;
+			independentStart = new int3(
+				rangeX[x - startChunkPosition.x].y - rangeX[x - startChunkPosition.x].x + independentStart.x,
+				independentStart.y,
+				independentStart.z
+			);
 		}
 	}
 }

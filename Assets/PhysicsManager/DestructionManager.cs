@@ -251,15 +251,15 @@ public class DestructionManager : MonoBehaviour
         Matrix4x4 matrix = voxelDataManager.GetWorldToLocalMatrix();
         center = matrix.MultiplyPoint(center);
 
-        int3 discreteStart = (int3)math.floor(center) - new int3 (15, 15, 15);
+        // int3 discreteStart = (int3)math.floor(center) - new int3 (15, 15, 15);
 
         NativeArray<int3> chunkPositions = pattern.GetKeyArray(Allocator.Persistent);
 
         for (int i = 0; i < chunkPositions.Length; i++)
         {
             int3 chunkPosition = chunkPositions[i];
-            float3 chunkCenter = (float3)discreteStart + (float3)chunkPosition * 32f;
-            Bounds bounds = new Bounds(center, new float3(32, 32, 32));
+            // float3 chunkCenter = (float3)discreteStart + (float3)chunkPosition * 32f;
+            Bounds bounds = new Bounds(math.floor(center), new float3(32, 32, 32));
 
             voxelDataManager.UpdateStateByIndependentState(bounds, pattern[chunkPosition]);
         }
