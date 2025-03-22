@@ -47,4 +47,28 @@ public abstract partial class VoxelDataManager
 
 		AddDirtyFlag(chunkPosition);
 	}
+	
+	public void UpdateSingleVoxel(int3 discretePosition, bool isAdd, uint blockType)
+	{
+		(int3 chunkPosition, int3 localPosition) = GetChunkAndLocalPosition(discretePosition);
+
+		(bool found, NativeSlice<uint> state, NativeSlice<uint> type) = GetChunkSlice(chunkPosition);
+		if (!found)
+		{
+			return;
+		}
+
+		uint mask = 1u << localPosition.x;
+		if (isAdd)
+		{
+			state[localPosition.y + 32 * localPosition.z] |= mask;
+			type[localPosition.x + 32 * localPosition.y + 32 * 32 * localPosition.z] = blockType;
+		}
+		else
+		{
+			state[localPosition.y + 32 * localPosition.z] &= ~mask;
+		}
+
+		AddDirtyFlag(chunkPosition);
+	}
 }

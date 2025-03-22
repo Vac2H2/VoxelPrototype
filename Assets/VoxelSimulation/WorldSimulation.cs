@@ -53,12 +53,44 @@ public class WorldSimulation : MonoBehaviour
             3u
         );
 
+        VoxelDataUpdator.AddStaircase(
+            chunkVoxelManager,
+            quadManager,
+            new int3(4, 36, 0),
+            new int3(4, 1, 4),
+            3u
+        );
+
         VoxelDataUpdator.AddRectangle(
             chunkVoxelManager,
             quadManager,
             new int3(5, 32, 5),
             new int3(26, 26, 4),
             4u
+        );
+
+        VoxelDataUpdator.AddRectangle(
+            chunkVoxelManager,
+            quadManager,
+            new int3(0, 32, 0),
+            new int3(8, 1, 8),
+            5u
+        );
+
+        VoxelDataUpdator.AddRectangle(
+            chunkVoxelManager,
+            quadManager,
+            new int3(13, 31, 12),
+            new int3(8, 1, 8),
+            4u
+        );
+
+        VoxelDataUpdator.AddRectangle(
+            chunkVoxelManager,
+            quadManager,
+            new int3(6, 31, 7),
+            new int3(8, 2, 8),
+            3u
         );
     }
 
