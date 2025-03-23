@@ -1,5 +1,6 @@
 using Unity.Collections;
 using Unity.Mathematics;
+using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 using UnityEngine;
 
 public class DestructionManager : MonoBehaviour
@@ -14,7 +15,9 @@ public class DestructionManager : MonoBehaviour
         public float MaxDistance;
     }
 
+    public GameObject DebrisPrefab;
     public WorldSimulation worldSimulation;
+    public PhysicsManager physicsManager;
     VoxelDataManager voxelDataManager;
 
     NativeHashMap<int3, NativeArray<uint>> sphereDestructionPattern;
@@ -92,7 +95,46 @@ public class DestructionManager : MonoBehaviour
     public void HandleProjectileHit(ProjectileData data)
     {
         // voxelDataManager.UpdateSingleVoxel(data.Position, false, 0);
-        RemoveVoxelByPattern(data.Position, sphereDestructionPattern);
+
+        NativeList<int3> debris = new NativeList<int3>(64, Allocator.Persistent);
+
+        NativeHashSet<int3> dirtyChunks = new NativeHashSet<int3>(8, Allocator.Persistent);
+        Matrix4x4 matrix = voxelDataManager.GetWorldToLocalMatrix();
+        for (int i = 0; i < destroyedVoxels.Length; i++)
+        {
+            int3 offset = destroyedVoxels[i] - new int3(15, 15, 15);
+            int3 localPosition = (int3)math.floor(matrix.MultiplyPoint(data.Position)) + offset;
+
+            if (voxelDataManager.UpdateSingleVoxel(localPosition, false, 0u))
+            {
+                debris.Add(localPosition);
+            }
+
+            (int3 chunkPosition, int3 _)
+            = voxelDataManager.GetChunkAndLocalPosition(localPosition);
+            dirtyChunks.Add(chunkPosition);
+        }
+
+        for (int i = 0; i < crumbleVoxels.Length; i++)
+        {
+            int3 offset = crumbleVoxels[i] - new int3(15, 15, 15);
+            int3 localPosition = (int3)math.floor(matrix.MultiplyPoint(data.Position)) + offset;
+
+            voxelDataManager.UpdateSingleVoxel(localPosition, false, 0u);
+
+            (int3 chunkPosition, int3 _)
+            = voxelDataManager.GetChunkAndLocalPosition(localPosition);
+            dirtyChunks.Add(chunkPosition);
+        }
+
+        foreach (int3 chunk in dirtyChunks)
+        {
+            voxelDataManager.AddDirtyFlag(chunk);
+        }
+
+        dirtyChunks.Dispose();
+
+        GenerateDebris(debris);
     }
 
     public VoxelDataManager GetVoxelDataManager()
@@ -246,22 +288,19 @@ public class DestructionManager : MonoBehaviour
         return (destructionPattern, crumblePattern);
     }
 
-    public void RemoveVoxelByPattern(float3 center, NativeHashMap<int3, NativeArray<uint>> pattern)
+    void GenerateDebris(NativeList<int3> debris)
     {
         Matrix4x4 matrix = voxelDataManager.GetWorldToLocalMatrix();
-        center = matrix.MultiplyPoint(center);
-
-        // int3 discreteStart = (int3)math.floor(center) - new int3 (15, 15, 15);
-
-        NativeArray<int3> chunkPositions = pattern.GetKeyArray(Allocator.Persistent);
-
-        for (int i = 0; i < chunkPositions.Length; i++)
+        for (int i = 0; i < debris.Length;)
         {
-            int3 chunkPosition = chunkPositions[i];
-            // float3 chunkCenter = (float3)discreteStart + (float3)chunkPosition * 32f;
-            Bounds bounds = new Bounds(math.floor(center), new float3(32, 32, 32));
+            float3 worldPosition = matrix.inverse.MultiplyPoint((float3)debris[i] + 0.5f);
+            GameObject debrisObject = Instantiate(DebrisPrefab);
+            debrisObject.GetComponent<DebrisCollision>().PhysicsManager = physicsManager;
 
-            voxelDataManager.UpdateStateByIndependentState(bounds, pattern[chunkPosition]);
+            debrisObject.transform.position = worldPosition;
+            debrisObject.transform.localScale = Vector3.one * 0.25f;
+
+            i += UnityEngine.Random.Range(0, 16);
         }
     }
 }

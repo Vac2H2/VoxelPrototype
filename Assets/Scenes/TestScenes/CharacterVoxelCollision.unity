@@ -906,7 +906,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66ec725becbf8ef48bb6fb1c6fc71c7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DebrisPrefab: {fileID: 3692189932561299579, guid: 972e3e55f5c730b4aadc20122208cf38, type: 3}
   worldSimulation: {fileID: 1828968782}
+  physicsManager: {fileID: 222578587}
 --- !u!4 &1830160294
 Transform:
   m_ObjectHideFlags: 0

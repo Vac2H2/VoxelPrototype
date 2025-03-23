@@ -103,7 +103,10 @@ public abstract partial class VoxelDataManager
 	/// <param name="chunkPosition">The chunk position</param>
 	public void AddDirtyFlag(int3 chunkPosition)
 	{
-		dirtyChunks.Enqueue(chunkPosition);
+		if (chunkMap.TryGetValue(chunkPosition, out int _))
+		{
+			dirtyChunks.Enqueue(chunkPosition);
+		}
 	}
 
 	public NativeQueue<int3> GetDirtyChunkQueue()
