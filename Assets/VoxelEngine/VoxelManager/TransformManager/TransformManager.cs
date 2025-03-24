@@ -12,20 +12,23 @@ namespace VoxelEngine.VoxelManager
 	public partial class TransformManager
 	{
 		float3 scale;
-		NativeList<int3> chunkAdded;
+		NativeList<int3> chunkPositions;
+		NativeList<int> chunkIndices;
 		NativeList<Bounds> chunkBounds;
 
 		public TransformManager(int maxNumChunk, float3 _scale)
 		{
 			scale = _scale;
 
-			chunkAdded = new NativeList<int3>(maxNumChunk, Allocator.Persistent);
+			chunkPositions = new NativeList<int3>(maxNumChunk, Allocator.Persistent);
+			chunkIndices = new NativeList<int>(maxNumChunk, Allocator.Persistent);
 			chunkBounds = new NativeList<Bounds>(maxNumChunk, Allocator.Persistent);
 		}
 
-		public void AddChunk(int3 chunkPosition)
+		public void AddChunk(int3 chunkPosition, int chunkIndex)
 		{
-			chunkAdded.Add(chunkPosition);
+			chunkPositions.Add(chunkPosition);
+			chunkIndices.Add(chunkIndex);
 			AddChunkBounds(chunkPosition);
 		}
 

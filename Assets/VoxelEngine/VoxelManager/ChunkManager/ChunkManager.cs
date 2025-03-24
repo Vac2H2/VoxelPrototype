@@ -13,24 +13,28 @@ namespace VoxelEngine.VoxelManager
     {
         public const int CHUNK_WIDTH = 32;
 
-        NativeHashMap<int3, int> chunkMap;
         int numChunkAdded;
-
+        NativeHashMap<int3, int> chunkMap;
         NativeHashSet<int3> dirtyChunks;
-        TransformManager transformManager;
 
-        public ChunkManager(int maxNumChunk)
+        TransformManager transformManager;
+        VoxelStateManager voxelStateManager;
+
+        public ChunkManager(int maxNumChunk, float3 scale)
         {
             numChunkAdded = 0;
             chunkMap = new NativeHashMap<int3, int>(maxNumChunk, Allocator.Persistent);
             dirtyChunks = new NativeHashSet<int3>(maxNumChunk, Allocator.Persistent);
+
+            transformManager = new TransformManager(maxNumChunk, scale);
+            voxelStateManager = new VoxelStateManager(maxNumChunk);
         }
 
         public void AddChunk(int3 chunkPosition)
         {
             if (chunkMap.TryAdd(chunkPosition, numChunkAdded))
             {
-                transformManager.AddChunk(chunkPosition);
+                transformManager.AddChunk(chunkPosition, numChunkAdded);
                 SetChunkDirty(chunkPosition);
                 numChunkAdded++;
             }
