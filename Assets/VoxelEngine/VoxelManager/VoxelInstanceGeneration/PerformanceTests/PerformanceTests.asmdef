@@ -6,7 +6,8 @@
         "UnityEditor.TestRunner",
         "Unity.PerformanceTesting",
         "Unity.Mathematics",
-        "VoxelEngine"
+        "VoxelEngine",
+        "Unity.Collections"
     ],
     "includePlatforms": [
         "Editor"

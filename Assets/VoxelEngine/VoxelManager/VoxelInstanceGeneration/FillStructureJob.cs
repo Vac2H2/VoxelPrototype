@@ -29,6 +29,7 @@ namespace VoxelEngine.VoxelManager
 			[NativeDisableParallelForRestriction]
 			public NativeArray<uint> structure; // [6 * 32 * 32] for 6 directions
 
+			[BurstCompile]
 			public void Execute(int direction)
 			{
 				NativeSlice<uint> slice = new NativeSlice<uint>(structure, direction * 1024, 1024);
