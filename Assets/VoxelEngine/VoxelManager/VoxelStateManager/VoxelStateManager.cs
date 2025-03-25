@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.Collections;
 using Unity.Mathematics;
+using PlasticGui.WorkspaceWindow;
 
 namespace VoxelEngine.VoxelManager
 {
@@ -18,6 +19,16 @@ namespace VoxelEngine.VoxelManager
 				Allocator.Persistent,
 				NativeArrayOptions.ClearMemory
 			);
+		}
+
+		public NativeSlice<uint> GetChunkSlice(int chunkIndex)
+		{
+			return new NativeSlice<uint>(state, chunkIndex * STATE_SIZE, STATE_SIZE);
+		}
+
+		public void Dispose()
+		{
+			state.Dispose();
 		}
 	}
 }

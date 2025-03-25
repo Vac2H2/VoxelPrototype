@@ -56,7 +56,31 @@ namespace VoxelEngine.VoxelManager
 				ComputeBufferType.Structured
 			);
 		}
-		
+
+		public void AddChunk(int3 chunkPosition)
+		{
+			NativeList<int> blockIndices = new NativeList<int>(4, Allocator.Persistent);
+			chunkToBlocksMap.TryAdd(chunkPosition, blockIndices);
+		}
+
+		public void Dispose()
+		{
+			NativeArray<int3> allKeys = chunkToBlocksMap.GetKeyArray(Allocator.Temp);
+			for (int i = 0; i < allKeys.Length; i++)
+			{
+				int3 key = allKeys[i];
+				NativeList<int> listForKey = chunkToBlocksMap[key];
+				listForKey.Dispose();
+			}
+			chunkToBlocksMap.Dispose();
+			availableBlockIndex.Dispose();
+
+			instanceBuffer.Release();
+			chunkPositionBuffer.Release();
+			instanceCountBuffer.Release();
+			typeIndexBuffer.Release();
+		}
+
 		/// <summary>
 		/// Update greedy quad instances given a chunk
 		/// </summary>
@@ -138,7 +162,7 @@ namespace VoxelEngine.VoxelManager
 				chunkToBlocksMap[chunkPosition] = newblockIndexList;
 			}
 			else // block needed bigger previous -> use extra block for update
-				// or the block needed are same -> normal update
+				 // or the block needed are same -> normal update
 			{
 				NativeArray<InstanceData> dataArray = data.AsArray();
 				int elementLeft = dataArray.Length;

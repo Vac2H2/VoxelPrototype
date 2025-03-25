@@ -43,5 +43,12 @@ namespace VoxelEngine.VoxelManager
 			) * scale;
 			chunkBounds.Add(new Bounds(chunkCenter, chunkScales));
 		}
+
+		public void Dispose()
+		{
+			chunkPositions.Dispose();
+			chunkIndices.Dispose();
+			chunkBounds.Dispose();
+		}
     }
 }

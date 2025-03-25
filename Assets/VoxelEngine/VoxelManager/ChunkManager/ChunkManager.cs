@@ -19,8 +19,9 @@ namespace VoxelEngine.VoxelManager
 
         TransformManager transformManager;
         VoxelStateManager voxelStateManager;
+        VoxelInstanceManager voxelInstanceManager;
 
-        public ChunkManager(int maxNumChunk, float3 scale)
+        public ChunkManager(int maxNumChunk, int maxNumBlockPerChunk, int gpuBlockSize, float3 scale)
         {
             numChunkAdded = 0;
             chunkMap = new NativeHashMap<int3, int>(maxNumChunk, Allocator.Persistent);
@@ -28,6 +29,7 @@ namespace VoxelEngine.VoxelManager
 
             transformManager = new TransformManager(maxNumChunk, scale);
             voxelStateManager = new VoxelStateManager(maxNumChunk);
+            voxelInstanceManager = new VoxelInstanceManager(maxNumChunk, maxNumBlockPerChunk, gpuBlockSize);
         }
 
         public void AddChunk(int3 chunkPosition)
@@ -46,6 +48,15 @@ namespace VoxelEngine.VoxelManager
             {
                 dirtyChunks.Add(chunkPosition);
             }
+        }
+
+        public void Dispose()
+        {
+            chunkMap.Dispose();
+            dirtyChunks.Dispose();
+            transformManager.Dispose();
+            voxelStateManager.Dispose();
+            voxelInstanceManager.Dispose();
         }
     }
 }

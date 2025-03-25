@@ -186,7 +186,7 @@ public class Tests
     public void PipelineWithoutJob()
     {
         NativeArray<uint> voxels = new NativeArray<uint>(1024, Allocator.Persistent);
-        for (int i = 0; i < 8512; i++)
+        for (int i = 0; i < 512; i++)
         {
             VoxelQuadsGeneration.AddVoxel(
                 voxels,
