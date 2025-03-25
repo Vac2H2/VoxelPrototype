@@ -3,9 +3,9 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace VoxelEngine.VoxelRenderer
+namespace VoxelEngine.VoxelRendering
 {
-	public partial class QuadRenderer
+	public partial class VoxelRenderer
 	{
 		void InitDummyMesh()
 		{

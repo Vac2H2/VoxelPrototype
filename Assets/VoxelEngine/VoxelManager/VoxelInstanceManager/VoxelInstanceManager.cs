@@ -18,14 +18,20 @@ namespace VoxelEngine.VoxelManager
 		NativeHashMap<int3, NativeList<int>> chunkToBlocksMap;
 		NativeQueue<int> availableBlockIndex;
 
+		int maxNumChunk;
+		int maxNumBlockPerChunk;
 		int blockSize;
 		ComputeBuffer instanceBuffer;
-		ComputeBuffer chunkPositionBuffer;
 		ComputeBuffer instanceCountBuffer;
+		ComputeBuffer chunkPositionBuffer;
 		ComputeBuffer typeIndexBuffer;
+		ComputeBuffer visibleBlockCountBuffer;
+		ComputeBuffer visibleBlockBuffer;
 
-		public VoxelInstanceManager(int maxNumChunk, int maxNumBlockPerChunk, int _blockSize)
+		public VoxelInstanceManager(int _maxNumChunk, int _maxNumBlockPerChunk, int _blockSize)
 		{
+			maxNumChunk = _maxNumChunk;
+			maxNumBlockPerChunk = _maxNumBlockPerChunk;
 			blockSize = _blockSize;
 
 			chunkToBlocksMap = new NativeHashMap<int3, NativeList<int>>(maxNumChunk, Allocator.Persistent);
@@ -55,12 +61,53 @@ namespace VoxelEngine.VoxelManager
 				sizeof(int),
 				ComputeBufferType.Structured
 			);
+
+			visibleBlockBuffer = new ComputeBuffer(
+				totalBlocks,
+				sizeof(int),
+				ComputeBufferType.Structured
+			);
+
+			visibleBlockCountBuffer = new ComputeBuffer(
+				1,
+				sizeof(int),
+				ComputeBufferType.Structured
+			);
 		}
 
 		public void AddChunk(int3 chunkPosition)
 		{
 			NativeList<int> blockIndices = new NativeList<int>(4, Allocator.Persistent);
 			chunkToBlocksMap.TryAdd(chunkPosition, blockIndices);
+		}
+
+		public void UpdateVisibleBlockBuffer(NativeList<int3> visibleChunks)
+		{
+			NativeList<int> visibleBlocks = GetVisibleGPUBlocks(visibleChunks);
+			visibleBlockBuffer.SetData(visibleBlocks.AsArray());
+			visibleBlockCountBuffer.SetData(new int[1] { visibleBlocks.Length });
+			visibleBlocks.Dispose();
+		}
+
+		public
+		(
+			ComputeBuffer instanceBuffer,
+			ComputeBuffer instanceCountBuffer,
+			ComputeBuffer chunkPositionBuffer,
+			ComputeBuffer typeIndexBuffer,
+			ComputeBuffer visibleBlockBuffer,
+			ComputeBuffer visibleBlockCountBuffer
+		) GetBuffers()
+		{
+			return
+			(
+				instanceBuffer,
+				instanceCountBuffer,
+				chunkPositionBuffer,
+				typeIndexBuffer,
+				visibleBlockBuffer,
+				visibleBlockCountBuffer
+			);
 		}
 
 		public void Dispose()

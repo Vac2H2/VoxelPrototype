@@ -19,6 +19,7 @@ namespace VoxelEngine.VoxelManager
 
         TransformManager transformManager;
         VoxelStateManager voxelStateManager;
+        VoxelTypeManager voxelTypeManager;
         VoxelInstanceManager voxelInstanceManager;
 
         public ChunkManager(int maxNumChunk, int maxNumBlockPerChunk, int gpuBlockSize, float3 scale)
@@ -29,6 +30,7 @@ namespace VoxelEngine.VoxelManager
 
             transformManager = new TransformManager(maxNumChunk, scale);
             voxelStateManager = new VoxelStateManager(maxNumChunk);
+            voxelTypeManager = new VoxelTypeManager(maxNumChunk);
             voxelInstanceManager = new VoxelInstanceManager(maxNumChunk, maxNumBlockPerChunk, gpuBlockSize);
         }
 
@@ -36,7 +38,7 @@ namespace VoxelEngine.VoxelManager
         {
             if (chunkMap.TryAdd(chunkPosition, numChunkAdded))
             {
-                transformManager.AddChunk(chunkPosition, numChunkAdded);
+                transformManager.AddChunk(chunkPosition);
                 SetChunkDirty(chunkPosition);
                 numChunkAdded++;
             }
@@ -48,6 +50,44 @@ namespace VoxelEngine.VoxelManager
             {
                 dirtyChunks.Add(chunkPosition);
             }
+        }
+
+        public
+        (
+            float3 scale,
+            ComputeBuffer instanceBuffer,
+            ComputeBuffer instanceCountBuffer,
+            ComputeBuffer chunkPositionBuffer,
+            ComputeBuffer typeIndexBuffer,
+            ComputeBuffer typeBuffer,
+            ComputeBuffer visibleBlockBuffer,
+            ComputeBuffer visibleBlockCountBuffer
+        ) GetRendererData()
+        {
+            (
+                ComputeBuffer instanceBuffer,
+                ComputeBuffer instanceCountBuffer,
+                ComputeBuffer chunkPositionBuffer,
+                ComputeBuffer typeIndexBuffer,
+                ComputeBuffer visibleBlockBuffer,
+                ComputeBuffer visibleBlockCountBuffer
+            ) = voxelInstanceManager.GetBuffers();
+
+            float3 scale = transformManager.GetScale();
+
+            ComputeBuffer typeBuffer = voxelTypeManager.GetTypeBuffer();
+
+            return
+            (
+                scale,
+                instanceBuffer,
+                instanceCountBuffer,
+                chunkPositionBuffer,
+                typeIndexBuffer,
+                typeBuffer,
+                visibleBlockBuffer,
+                visibleBlockCountBuffer
+            );
         }
 
         public void Dispose()
