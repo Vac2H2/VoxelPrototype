@@ -12,7 +12,6 @@ public abstract partial class VoxelDataManager
 	{
 		(int3 chunkPosition, int3 localPosition) = GetChunkAndLocalPosition(worldPosition);
 		(bool found, NativeSlice<uint> state, NativeSlice<uint> type) = GetChunkSlice(chunkPosition);
-
 		int3 endLocalPosition = localPosition + scale;
 		uint mask = GenerateMaskByRange(new int2(localPosition.x, endLocalPosition.x));
 		for (int y = localPosition.y; y < endLocalPosition.y; y++)

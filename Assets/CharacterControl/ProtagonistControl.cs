@@ -49,14 +49,14 @@ public class ProtagonistControl : MonoBehaviour
             moveDirection -= right;
         if (Input.GetKey(KeyCode.D))
             moveDirection += right;
-
-        if (Input.GetKey(KeyCode.Space))
-            moveDirection += Vector3.up;
         if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
             moveDirection += Vector3.down;
-        
+
 
         float3 newVelocity = moveDirection * movementSpeed;
         velocity = new float3(newVelocity.x, velocity.y, newVelocity.z);
+
+        if (Input.GetKey(KeyCode.Space))
+            velocity = new float3(0, 6f, 0);
     }
 }

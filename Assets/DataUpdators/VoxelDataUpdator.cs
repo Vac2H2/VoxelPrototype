@@ -41,6 +41,7 @@ public static partial class VoxelDataUpdator
 	)
 	{
 		(int3 chunkPosition, int3 localPosition) = voxelDataManager.GetChunkAndLocalPosition(worldPosition);
+		// Debug.Log($"chunkPosition: {chunkPosition}, localPosition: {localPosition}");
 		voxelDataManager.AddChunk(chunkPosition);
 		quadInstanceManager.AddChunk(chunkPosition);
 

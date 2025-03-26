@@ -92,6 +92,78 @@ public class WorldSimulation : MonoBehaviour
             new int3(8, 2, 8),
             3u
         );
+
+        VoxelDataUpdator.AddRectangle(
+            chunkVoxelManager,
+            quadManager,
+            new int3(20, 32, -16),
+            new int3(1, 8, 4),
+            3u
+        );
+
+        VoxelDataUpdator.AddRectangle(
+            chunkVoxelManager,
+            quadManager,
+            new int3(20, 32, -24),
+            new int3(1, 8, 4),
+            3u
+        );
+
+        VoxelDataUpdator.AddRectangle(
+            chunkVoxelManager,
+            quadManager,
+            new int3(20, 32, -30),
+            new int3(1, 8, 4),
+            3u
+        );
+
+        // floor case
+        VoxelDataUpdator.AddRectangle(
+            chunkVoxelManager,
+            quadManager,
+            new int3(0, 32, -16),
+            new int3(1, 8, 4),
+            3u
+        );
+        VoxelDataUpdator.AddRectangle(
+            chunkVoxelManager,
+            quadManager,
+            new int3(0, 40, -20),
+            new int3(1, 1, 4),
+            3u
+        );
+
+        VoxelDataUpdator.AddRectangle(
+            chunkVoxelManager,
+            quadManager,
+            new int3(0, 32, -24),
+            new int3(1, 8, 4),
+            3u
+        );
+
+        VoxelDataUpdator.AddRectangle(
+            chunkVoxelManager,
+            quadManager,
+            new int3(0, 32, -32),
+            new int3(1, 8, 4),
+            3u
+        );
+
+        VoxelDataUpdator.AddRectangle(
+            chunkVoxelManager,
+            quadManager,
+            new int3(8, 39, -8),
+            new int3(8, 1, 8),
+            3u
+        );
+
+        VoxelDataUpdator.AddRectangle(
+            chunkVoxelManager,
+            quadManager,
+            new int3(16, 48, -16),
+            new int3(4, 1, 4),
+            3u
+        );
     }
 
     void Update()
